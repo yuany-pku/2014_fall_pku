@@ -1,0 +1,76 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass[slidestop,compress,epsfig,color]{beamer}
+\usepackage{pstricks}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+%\usepackage{beamerthemesplit}
+\usetheme{Warsaw}
+\mode<presentation> 
+\useoutertheme{shadow} 
+\useoutertheme{miniframes} %miniframes
+%\useoutertheme[subsection=false]{smoothbars} 
+\useinnertheme{rectangles}
+\usepackage{CJKutf8}
+
+\graphicspath{{../../course/2011_Summer_Fudan/}}
+
+%\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\X}{\mathcal{X}}
+\providecommand{\Y}{\mathcal{Y}}
+\providecommand{\Z}{\mathcal{Z}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\H}{\mathcal{H}}
+\providecommand{\D}{\mathcal{D}}
+\providecommand{\U}{\mathcal{U}}
+\providecommand{\De}{\Delta}
+\providecommand{\de}{\delta}
+\providecommand{\hg}{\hat{g}}
+
+\theoremstyle{example}
+\newtheorem{thm}{}
+%\newtheorem{fact}{}
+
+\providecommand{\subitem}{\\ \textcolor{yellow}{$\bullet\ $}}
+\DeclareMathOperator{\sign}{sign}
+%\DeclareMathOperator{\span}{span}
+\DeclareMathOperator{\supp}{supp}
+%\DeclareMathOperator{\ker}{ker}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\grad}{grad}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\dive}{div}
+\DeclareMathOperator{\ASL}{\mathfrak{sl}}
+
+
+
+\title[Math Intro Data Anal]{A Mathematical Introduction to Data Analysis}
+\author{Yuan Yao}
+\institute{School of Mathematical Sciences \\ Peking University}
+%\date{July 13, 2011}
+\addtobeamertemplate{title page}{}{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section[Outline]{}
+\frame{\tableofcontents}
+
+\section[Why]{Why Topological Methods?}
+
+\frame{
+  \frametitle{Reference}
+  \begin{itemize}
+  \item Edelsbrunner, Letscher, and Zomorodian (2002) Topological Persistence and Simplification.   
+  \item Ghrist, R. (2007) Barcdes: the Persistent Topology of Data. \emph{Bulletin of AMS}, 45(1):61-75. 
+  \item Edelsbrunner, Harer (2008) Persistent Homology - a survey. \emph{Contemporary Mathematics}.
+  \item Carlsson, G. (2009) Topology and Data. \emph{Bulletin of AMS}, 46(2):255-308.
+  \end{itemize}
+}
+
+\end{document}
+

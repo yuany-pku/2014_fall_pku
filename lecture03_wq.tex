@@ -1,0 +1,407 @@
+\documentclass[twoside]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphics}
+
+\usepackage{color}
+% \usepackage{psfig}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+%\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+
+\newenvironment{pf}{{\noindent\sc Proof. }}{\qed\newline}
+
+%%%%%%%
+% Some commonly used notations in Learning Theory
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\C{{\mathbb C}}
+\def\N{{\mathbb N}}
+\def\L{{\mathcal L}}
+\def\Z{{\mathbb Z}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\diag{{\rm diag}}
+\def\sign{{\rm sign}}
+\def\span{{\rm span}}
+\def\supp{{\rm supp}}
+\def\Pr{{\rm Prob}}
+\def\H{{\cal{H}}}
+\def\D{{\cal{D}}}
+\def\U{{\cal{U}}}
+\def\ie{{\it i.e. }}
+\def\etc{{\it etc. }}
+\def\etal{{\it et al. }}
+
+\def\De{{\Delta}}
+\def\P{{\rm P}}
+\def\Var{{\rm Var}}
+
+\newcommand{\st}{\text{s.t.}}
+\DeclareMathOperator{\argmax}{argmax}
+\DeclareMathOperator{\argmin}{argmin}
+
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\res}{res}
+\DeclareMathOperator{\Proj}{Proj}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematics for Data Sciences \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2, Peking University \hfill Scribe: #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notations in Learning Theory
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\N{{\mathbb N}}
+\def\L{{\mathcal L}}
+\def\Z{{\mathbb Z}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\diag{{\rm diag}}
+\def\sign{{\rm sign}}
+\def\span{{\rm span}}
+\def\supp{{\rm supp}}
+\def\Pr{{\rm Prob}}
+\def\H{{\cal{H}}}
+\def\D{{\cal{D}}}
+\def\U{{\cal{U}}}
+\def\ie{{\it i.e. }}
+\def\etc{{\it etc. }}
+\def\etal{{\it et al. }}
+
+\def\De{{\Delta}}
+\def\P{{\rm Prob}}
+
+\begin{document}
+
+\lecture{Lecture 3. Stein's Phenomenon and James-Stein Estimator}{Jingshu Wang (Stanford), Yuan Yao}{Qing Wang}{Sept. 25}
+
+%\setcounter{section}{0}
+\section*{Introduction}
+
+We start from a simple setting. Suppose
+\[ Y = X\beta + \epsilon, \quad \epsilon \sim N(0,\sigma^2 I) \]
+A LASSO estimator is defined to be
+\[ \hat{\beta}^\lambda = \argmin_{\beta} \frac{1}{2} \lVert Y - X\beta \rVert^2 + \lambda \lVert \beta \rVert_1 \]
+For $X = I$, this simplifies to
+\[ Y = \beta + \epsilon \]
+\[ \hat{\beta}^\lambda = \argmin_{\beta} \frac{1}{2} \sum (y_i - \beta_i)^2 + \lambda \sum \lvert \beta_i \rvert \]
+The result is known as \emph{soft-thresholding}
+\[
+	\hat{\beta}_i = \left\{ \begin{array}{cc}
+			y_i - \lambda & y_i > \lambda \\
+			0 & \lvert y_i \rvert \le \lambda \\
+			y_i + \lambda & y_i < -\lambda \end{array} \right.
+\]
+
+On the other hand, in a similar setting where $Y_1, Y_2, \cdots, Y_n \overset{\textit{i.i.d}}{\sim}N(\beta, \sigma^2 I)$, a MLE is
+\[ \hat{\mu}^{\text{MLE}} = \bar{Y} \]
+We think that $\bar{Y}=\frac{1}{n}\sum_{i=1}^{i=n}Y_i$ is a good estimator for $\mu$ in the sense that
+\begin{enumerate}
+	\item $\bar{Y}$ is UMVUE\footnote{Uniformly Minimum-Variance Unbiased Estimator, the estimator with the least variance among the class of unbiased estimators.}.
+	\item $\bar{Y}$ is MLE, thus it has consistency\footnote{$\bar{Y} \xrightarrow{p} \mu$} 
+		and asymptotic efficiency\footnote{Loosely speaking, 
+			for any other unbiased estimator $\hat{\mu}$, 
+			we have asymptotic minimum variance $\lim \Var \hat{\mu} \ge \lim \Var \hat{\mu}^{\text{MLE}}$
+		}.
+
+\end{enumerate}
+
+The second property guarantees that for $n \to \infty$ with a fixed $p$, there is no estimator of $\mu$ better than $\bar{Y}$, but for a finite sample size, a biased estimator may be better than $\bar{Y}$   
+
+
+\subsection{What's a good estimator?}
+
+Consider a risk defined as
+\[ R(\hat{\mu}, \mu) = \E_{\mu} L(\hat{\mu},\mu) \]
+$L$ is a loss function we are interested in. A good estimator should 
+have a low risk. An estimator $\hat{\mu}$ is \emph{inadmissable} 
+if there exist another estimator $\hat{\eta}$ which has lower risk
+everywhere\footnote{$R(\hat{\eta},\mu) \le R(\hat{\mu},\mu)$
+	for all $\mu$ and equility doesn't hold for some $\mu$.}.
+
+Consider $L(\hat{\mu},\mu) = \lVert \hat{\mu} - \mu \rVert^2$, we have
+\begin{eqnarray*}
+R(\hat{\mu},\mu) &=& \E_{\mu} \lVert \hat{\mu} - \mu \rVert^2 \\
+&=& \E_{\mu} \lVert \hat{\mu} - \E\hat{\mu} + \E\hat{\mu} - \mu \rVert^2 \\
+&=& \E_\mu \lVert \hat{\mu} - \E \hat{\mu} \rVert^2 + \left( \E \hat{\mu} - \mu \right)^2
+\end{eqnarray*}
+This is a \emph{bias}-\emph{variance} decomposition.
+Suppose we have $n$ samples for a MLE, the variance part is $\sigma^2 p/n$ 
+while the bias term is zero. 
+When $p$ is large, the variance term dominates the error.
+So we may like to trade some unbiasedness for a lower variance.
+
+\section{Stein's Phenomenon}
+	For $p \ge 3$, there exists $\hat{\mu}$ \st $\forall \mu$,
+	\[ R(\hat{\mu}, \mu) < R(\hat{\mu}^{\text{MLE}}, \mu) \]
+	(which makes MLE inadmissable).
+
+	A typical choice for $\hat{\mu}$ is \emph{James-Stein estimator}:
+\[
+	\hat{\mu}^{\text{JS}} = \left( 1 - \frac{p-2}{\lVert \bar{Y} \rVert^2} \cdot \frac{\sigma^2}{n} \right) \bar{Y}
+\]
+
+\begin{thm}
+	Suppose $Y \sim N_p(\mu,I)$. Then $\hat{\mu}^{\text{MLE}} = Y$. 
+	$R(\hat{\mu},\mu) = \E_{\mu} \lVert \hat{\mu} - \mu\rVert^2$, and define
+	\[ \hat{\mu}^{\text{JS}} = \left(1 - \frac{p-2}{\lVert Y \rVert^2} \right) Y \]
+	then
+	\[
+		R(\hat{\mu}^{\text{JS}}, \mu) < R(\hat{\mu}^{\text{MLE}},\mu) 
+	\]
+\end{thm}
+We'll prove a useful lemma first.
+
+\section{Stein's Unbiased Risk Estimates (SURE)}
+Note: Discussions below are all under the assumption that $Y \sim N_p(\mu, I)$.
+\begin{lem}(Stein's Unbiased Risk Estimates (SURE))
+	Suppose $\hat{\mu} = Y + g(Y)$, $g$ satisfies
+	\footnote{cf. p38, Prop 2.4 [GE]}
+	\begin{enumerate}
+		\item $g$ is weakly differentiable.
+		\item $\sum_{i=1}^p \int \lvert \partial_i g_i(x) \rvert \mathrm{d}x < \infty$
+	\end{enumerate}
+	then
+	\[
+		R(\hat{\mu},\mu) = \E_{\mu} ( p + 2\nabla^Tg(Y) + \lVert g(Y) \rVert^2 )
+	\]
+\end{lem}
+Examples og $g(x)$: For James-Stein estimator
+\[
+	g(x) = - \frac{p-2}{\lVert Y \rVert^2} Y
+\]
+and for soft-thresholding, each component
+\[
+	g_i(x) = \left\{\begin{array}{cc}
+			-\lambda & x_i > \lambda \\
+			-x_i & \lvert x_i \rvert \le \lambda \\
+			\lambda & x_i < -\lambda
+		\end{array}\right.
+\]
+\begin{pf}
+\begin{eqnarray*}
+R(\hat{\mu},\mu) &=& \E_\mu \lVert Y + g(Y) - \mu \rVert^2 \\
+&=& \E_\mu \left( p + 2(Y-\mu)^Tg(Y) + \lVert g(Y) \rVert^2 \right)
+\end{eqnarray*}
+\begin{eqnarray*}
+\E_\mu (Y-\mu)^Tg(Y)
+&=&\sum_{i=1}^p \int_{-\infty}^{\infty} 
+	(y_i-\mu_i)g_i(Y)\phi(Y-\mu)\mathrm{d}Y \\
+&=&\sum_{i=1}^p \int_{-\infty}^{\infty}
+	-g_i(Y) \frac{\partial}{\partial y_i} \phi(Y-\mu) \mathrm{d}Y \\
+&=&\sum_{i=1}^p \int_{-\infty}^{\infty}
+	\frac{\partial}{\partial y_i} g_i(Y) \phi(Y-\mu) \mathrm{d}Y \\
+&=& \E_\mu \nabla^{T} g(Y)
+\end{eqnarray*}
+\end{pf}
+Thus, we have
+\begin{eqnarray*}
+	R(\hat{\mu},\mu) &=& \E_\mu (p + 2\nabla^Tg(Y) + \lVert g(Y) \rVert^2 ) \\
+					&=:& \E_\mu U(Y)
+\end{eqnarray*}
+
+\section{Risk of James-Stein Estimator}
+Recall
+\[ g(Y) = - \frac{p-2}{\lVert Y \rVert^2} Y \]
+\[ U(Y) = p + 2\nabla^Tg(Y) + \lVert g(Y) \rVert^2 \]
+\[
+	\lVert g(Y) \rVert^2 = \frac{(p-2)^2}{\lVert Y \rVert^2}
+\]
+\[
+	\nabla^Tg(Y) = - \sum_i \frac{\partial}{\partial y_i} 
+		\left( \frac{p-2}{\lVert Y \rVert^2} Y \right) 
+		= - \frac{(p-2)^2}{\lVert Y \rVert^2}
+\]
+we have
+\[
+	R(\hat{\mu}^{\text{JS}},\mu) = \E U(Y) 
+	= p - \E_\mu \frac{(p-2)^2}{\lVert Y \rVert^2}
+	< p = R(\hat{\mu}^{\text{MLE}},\mu)
+\]
+when $p \ge 3$.
+\begin{prob}
+	What's wrong when $p=1$? Does SURE still hold?
+\end{prob}
+\begin{rem}
+	Indeed, we have the following theorem
+	\begin{thm}[Lemma 2.8 in Johnstone's book (GE)]
+		$Y \sim N(\mu, I)$, $\forall \hat{\mu} = CY$,
+		$\hat{\mu}$ is admissable iff
+		\begin{enumerate}
+			\item $C$ is symmetric.
+			\item $0 \le \rho_i(C) \le 1$ (eigenvalue).
+			\item $\rho_i(C) = 1$ for at most two $i$.
+		\end{enumerate}
+	\end{thm}
+\end{rem}
+
+To find an upper bound of the risk of James-Stein estimator, notice that
+$\lVert Y \rVert^2 \sim \chi^2(\lVert\mu\rVert^2, p) $ and
+\footnote{This is a homework.}
+\[
+	\chi^2(\lVert \mu \rVert^2 ,p ) \overset{d}{=} \chi^2(0,p+2N), 
+		\quad N \sim \text{Poisson}\left(\frac{\lVert \mu \rVert^2}{2}\right)
+\]
+we have
+\begin{eqnarray*}
+\E_\mu\left(\frac{1}{\lVert Y \rVert^2}\right) &=& 
+	\E \E_\mu \left[\frac{1}{\lVert Y \rVert^2} \Big\vert N \right] \\
+	&=& \E \frac{1}{p+2N-2} \\
+	&\ge& \frac{1}{p+2\E N -2}\  (\text{Jensen's Inequality}) \\
+	&=& \frac{1}{p+\lVert \mu \rVert^2 - 2}
+\end{eqnarray*}
+that is
+\[
+	R(\hat{\mu}^{\text{JS}},\mu) 
+	\le p - \frac{(p-2)^2}{p-2+\lVert \mu \rVert^2} 
+	= 2 + \frac{(p-2)\lVert \mu \rVert^2}{p-2+\lVert\mu\rVert^2}
+\]
+
+\begin{center}
+\includegraphics{lecture03plot1.pdf}
+\end{center}
+
+\section{Example}
+
+(See Efron's Book, Chap 1, Table 1.1)
+
+James-Stein estimator is not the only estimator better than MLE,
+we also have
+\begin{eqnarray*}
+\hat{\mu}^{\text{JS+}}
+	&=& \left( 1-\frac{p-2}{\lVert Y \rVert^2}\right)_{+} Y\\
+\hat{\mu}^{\text{c}}
+	&=& \left( 1-\frac{c}{\lVert Y \rVert^2}\right) Y, \quad
+		c \in (0,2(p-2)) \\
+\hat{\mu}_{\mu_0} 
+	&=& \mu_0 + \left( 1-\frac{p-2}{\lVert Y \rVert^2}\right) (Y-\mu_0) \\
+\hat{\mu}_{\text{center}}
+&=& \bar{y}\mathbf{1} + \left(1 - \frac{p-3}{\lVert Y-\bar{y}\mathbf{1}\rVert^2}\right) (Y-\bar{y}\mathbf{1})
+\end{eqnarray*}
+better than MLE and $\hat{\mu}^{\text{JS+}}$ 
+better than $\hat{\mu}^{\text{JS}}$.
+
+\section{Risk of soft thresholding}
+
+Using Stein's unbiased risk estimate, we have soft-thresholding
+in the form of
+\[ \hat{\mu}(x) = x + g(x). \quad 
+	\frac{\partial}{\partial i}g_i(x) = - I(\lvert x_i \rvert \le \lambda )
+\]
+We then have
+\begin{eqnarray*}
+\E_\mu \lVert \hat{\mu}_\lambda - \mu \rVert^2
+&=& \E_\mu \left( p - 2 \sum_{i=1}^p I(\lvert x_i \rvert \le \lambda)
+	+ \sum_{i=1}^p x_i^2 \wedge \lambda^2 \right) \\
+&\le& 1 +(2\log p + 1)\sum_{i=1}^p \mu_i^2\wedge 1 
+	\quad \text{if we take } \lambda = \sqrt{2 \log p}
+\end{eqnarray*}
+By using the inequality
+\[ \frac{1}{2} a \wedge b \le \frac{ab}{a+b} \le a \wedge b \]
+we can compare the risk of soft-thresholding and James-Stein estimator
+as
+\[
+	1 + (2\log p + 1) \sum_{i=1}^p ( \mu_i^2 \wedge 1 ) \quad
+	\lesseqgtr \quad
+	2 + c \left( \left( \sum_{i=1}^p \mu_i^2 \right) \wedge p \right)
+	\quad c \in (1/2, 1)
+\]
+In LHS, the risk for each $\mu_i$ is bounded by 1 so if $\mu$ is sparse ($s=\#\{i: \mu_i \neq 0\}$)
+but large in magnitudes (s.t. $\|\mu\|_2^2 \geq p$), we may expect LHS $=O( s\log p) < O(p)=$ RHS. \footnote{also cf. p43 [GE]}
+
+In addition to $L_1$ penalty in LASSO, there are also other 
+penalty functions like
+\begin{itemize}
+\item $\lambda \lVert \beta \rVert_0$  This leads to 
+	\emph{hard}-\emph{thresholding} when $X = I$. Solving this problem is
+	normally NP-hard.
+\item $\lambda \lVert \beta \rVert_p$ , $0<p<1$. Non-convex, also NP-hard.
+\item $\lambda \sum \rho(\beta_i)$. such that
+	\begin{enumerate}
+		\item $\rho'(0)$ singular (for sparsity in variable selection)
+		\item $\rho'(\infty)=0$ (for unbiasedness in parameter estimation)
+	\end{enumerate}
+	Such $\rho$ must be non-convex essentially (Jianqing Fan and Runze Li, 2001).
+\end{itemize}
+
+\section{Random Matrix Theory and PCA}
+Now we turn to the 2nd moment estimation problems.
+
+Consider MLE:
+\begin{eqnarray*}
+	\hat{\mu}_n &=& \frac{1}{n} \sum_{i=1}^n x_i \\
+	\hat{\Sigma}_n &=& \frac{1}{n} 
+		\sum_{i=1}^n(x_i - \hat{\mu}_n)(x_i - \hat{\mu})^T
+\end{eqnarray*}
+Our question is, when can PCA on $\hat{\Sigma}_n$ recover the signal?
+
+Consider the 1-dimensional spike model $X_i = \sigma_x \mu + \epsilon_i$, $\lVert \mu \rVert^2 = 1$,
+$\epsilon_i \sim N(0,\sigma_\epsilon^2 I)$. 
+Then
+\[
+	\Sigma = \sigma_x^2 \mu \mu^T + \sigma_\epsilon^2 I_p
+\]
+We hope that PCA as top eigenvector of $\hat{\Sigma}_n$ may disclose information about $\mu$, at least approximately. However such a hope may fails in case that $p/n \to \gamma \ne 0$. From [Johnstone06], we have
+\[
+	\lambda_{\max}(\hat{\Sigma}_n) = \left\{\begin{array}{cc}
+			b = \sigma_\epsilon^2(1+\sqrt{\gamma})^2, & R \le \sqrt{\gamma} \\
+			\sigma_\epsilon^2(1+R)(1+\gamma/R), & R > \sqrt{\gamma}
+		\end{array}\right.
+\]
+in which the signal-noise ratio $R = \sigma_x^2 / \sigma_\epsilon^2$. This implies a phase-transition in recovering signal via PCA: if the signal-noise ratio is small $R\leq\sqrt{\gamma}$, PCA is nothing but random vectors as $\lambda_{\max}(\hat{\Sigma}_n) $ is buried in the spectrum of random matrices (in the band of Mar\v{c}enko-Pastur Law); but if the signal-noise ratio is large $R>\sqrt{\gamma}$, then PCA can be used to approximate $\mu$. 
+
+More details can be found in the lecture note Chapter 1.4. 
+
+\end{document}
+
+
