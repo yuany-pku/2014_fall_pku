@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\def\A{{\mathcal A}}
+\def\N{{\mathbb N}}
+\def\NN{{\mathcal N}}
+\def\R{{\mathbb R}}
+\def\E{{\mathbb E}}
+\def\rank{{\mathrm{rank}}}
+\def\tr{{\mathrm{trace}}}
+\def\P{{\mathrm{Prob}}}
+\def\sign{{\mathrm{sign}}}
+\def\diag{{\mathrm{diag}}}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf A Mathematical Introduction to Data Science \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2\hfill #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+\begin{document}
+
+\lecture{Homework 7. Multiple Spectral Clustering}{Yuan Yao}{Due: Tuesday December 9, 2014}{December 2, 2014}
+
+The problem below marked by $^*$ is optional with bonus credits. % For the experimental problem, include the source codes which are runnable under standard settings. 
+
+\begin{enumerate}
+
+\item {\em Degree Corrected Stochastic Block Model (DCSBM)}: A random graph is generated from a DCSBM with respect to partition $\Omega=\{\Omega_k: k=1,\ldots,K\}$ if its adjacency matrix $A \in \{0,1\}^{N\times N}$ has the following expectation
+
+\[ \E [A] = \A = \Theta Z B Z^T \Theta\]
+
+where $Z^{N \times k}$ has row vectors $\thickspace \in {\{0,1\}}^K$ as the block membership function $z:V\to \Omega$,
+\begin{equation*}
+z_{ik}=
+ \begin{cases}
+    1,   &  i\in \Omega_k, \\
+    0,   &  otherwise.
+ \end{cases}
+\end{equation*}
+and $\Theta = \diag(\theta_i)$ is the expected degree satisfying,
+\begin{equation*}
+  \sum_{i\in \Omega_k}\theta_i=1, \ \ \ \forall k=1,\ldots,K.
+\end{equation*}
+
+The following matlab codes simulate a DCSBM of $n K$ nodes, written by Kaizheng Wang, 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/DCSBM.m} 
+
+Construct a DCSBM yourself, and simulate random graphs of 10 times. Then try to compare the following two spectral clustering methods in finding the $K$ blocks (communities).  
+\begin{enumerate}
+\item[Algorithm I]
+\subitem[1] Compute the \emph{top} $K$ generalized eigenvector $$(D - A) \phi_i = \lambda_i D \phi_i,$$ construct a $K$-dimensional embedding of $V$ using $\Phi^{N\times K} = [\phi_1, \ldots, \phi_K]$; 
+\subitem[2] Run $k$-means algorithm (call {\tt{kmeans}} in matlab) on $\Phi$ to find $K$ clusters.
+\item[Algorithm II]
+\subitem[1] Compute the \emph{bottom} $K$ eigenvector of $$L_n = D^{-1/2}(D-A)D^{-1/2} = U \Lambda U^T,$$ construct an embedding of $V$ using $U^{N\times K}$;
+\subitem[2] Normalized the row vectors $u_{i\ast}$ on to the sphere: $\hat{u}_{i\ast} = u_{i\ast}/\|u_{i\ast}\|$;
+\subitem[3] Run $k$-means algorithm (call {\tt{kmeans}} in matlab) on $\hat{U}$ to find $K$ clusters.
+\end{enumerate} 
+
+You may run it multiple times with a stabler clustering. Suppose the estimated membership function is $\hat{z}: V\to \{1,\ldots,K\}$ in either methods. Compare the performance using mutual information between membership function $z$ and estimate $\hat{z}$,
+\begin{equation}
+I(z, \hat{z}) = \sum_{s,t=1}^K Prob(z_i = s, \hat{z}_i=t) \log \frac{Prob(z_i=s, \hat{z}_i=t)}{Prob(z_i= s) Prob(\hat{z}_i= t)}.
+\end{equation}
+A reference matlab code can be found at (thanks to Kaizheng Wang for pointing out this)
+
+\url{http://www.cse.ust.hk/~weikep/notes/NormalizedMI.m}
+ 
+\item {\em A Dream of Red Mansions}: Try the spectral clustering algorithms above to character-character cooccurance network, where the 376-by-475 matrix $X$ of character-event is given, e.g. 
+in .txt file:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/HongLouMeng374.txt}
+
+or in the Matlab format 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/hongloumeng376.mat} 
+
+\noindent with a readme file:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/readme.m}
+
+$\ast$ How do you decide $K$ in this real-world example? 
+
+\emph{Note: all the 'NaN's in the matlab file refer to $0$'s.}
+
+\end{enumerate}
+
+\end{document}
+
+

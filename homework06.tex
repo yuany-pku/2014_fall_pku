@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\def\N{{\mathbb N}}
+\def\NN{{\mathcal N}}
+\def\R{{\mathbb R}}
+\def\E{{\mathbb E}}
+\def\rank{{\mathrm{rank}}}
+\def\tr{{\mathrm{trace}}}
+\def\P{{\mathrm{Prob}}}
+\def\sign{{\mathrm{sign}}}
+\def\diag{{\mathrm{diag}}}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf A Mathematical Introduction to Data Science \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2\hfill #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+\begin{document}
+
+\lecture{Homework 5. Perron-Frobenius and Fiedler Theory}{Yuan Yao}{Due: Tuesday November 18, 2014}{November 25, 2014}
+
+The problem below marked by $^*$ is optional with bonus credits. % For the experimental problem, include the source codes which are runnable under standard settings. 
+
+\begin{enumerate}
+
+\item {\em PageRank}:  The following dataset contains Chinese (mainland) University Weblink during 12/2001-1/2002,
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Fall2011/univ_cn.mat}
+
+where $\tt{rank\_{}cn}$ is the research ranking of universities in that year, $\tt{univ\_{}cn}$ contains the webpages of universities, and $\tt{W\_{}cn}$ is the link matrix from university
+$i$ to $j$. 
+ 
+\begin{enumerate}
+\item Compute PageRank with Google's hyperparameter $\alpha=0.85$;
+\item Compute HITS authority and hub ranking using SVD of the link matrix; 
+\item Compare these rankings against the research ranking (you may consider Kendall's $\tau$ distance -- as the number of pairwise mismatches between two orders -- to compare different rankings);  
+\item Compute extended PageRank with various hyperparameters $\alpha\in (0,1)$, investigate its effect on ranking stability. 
+\end{enumerate} 
+
+For your reference, an implementation of PageRank and HITs can be found at 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Fall2011/pagerank.m}
+
+\item {\em Perron Theorem:} Assume that $A>0$. Consider the following optimization problem:
+\begin{eqnarray*}
+& & \max \delta \\
+& s.t. & Ax\geq\delta x \\
+&& x\geq 0 \\
+&& x \neq 0.
+\end{eqnarray*}
+Let $\lambda^*$ be optimal value with $\nu^*\geq0,\quad 1^T\nu^*=1$, and $A\nu^*\geq\lambda^*\nu^*$. Show that
+\begin{enumerate}
+\item $A\nu^*=\lambda^*\nu^*$, i.e. $(\lambda^*,\nu^*)$ is an eigenvalue-eigenvector pair of $A$;\\
+\item  $\nu^*>0$;\\
+\item[*(c)]$\lambda^*$ is unique and $\nu^*$ is unique;\\
+\item[*(d)]  For other eigenvalue $\lambda\quad(\lambda z=Az\quad when\quad z\neq0)$, $|\lambda|<\lambda^*$.
+\end{enumerate}
+
+
+\item {\em Absorbing Markov Chain:} 
+
+Let $P$ be a row Markov matrix on $n+1$ states with non-absorbing state $\{1,\ldots,n\}$ and absorbing state $n+1$. Then $P$ can be partitioned into 
+\[
+	P=\left[
+	\begin{array}{cc} 
+	Q & R \\ 
+	0 & 1 
+	\end{array} \right]
+\]
+Assume that $Q$ is primitive. Let $N(i,j)$ be the expected number of jumps starting from nonabsorbent state $i$ and hitting state $j$, before reaching the absorbing state $n+1$. Show
+that
+\begin{enumerate}
+\item $N(i,i) = 1 + \sum_k N(i,k) Q(k,i)$, for $i=1,\ldots,n$;
+\item $N(i,j) = \sum_k N(i,k) Q(k,j)$, for $i\neq j$;
+\item These identities together imply that $N=(I-Q)^{-1}$, called the fundamental matrix; 
+\item Show that the probability of absorption from state $i$, $B(i)$ ($i=1\ldots,n$), is given by $B=NR$.   
+\end{enumerate}
+
+
+\end{enumerate}
+
+\end{document}
+
+

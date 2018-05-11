@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+
+\def\L{{\mathcal L}}
+\def\M{{\mathcal M}}
+\def\N{{\mathbb N}}
+\def\NN{{\mathcal N}}
+\def\R{{\mathbb R}}
+\def\E{{\mathbb E}}
+\def\tr{{\mathrm{trace}}}
+\def\supp{{\mathrm{supp}}}
+\def\ker{{\mathrm{ker}}}
+\def\im{{\mathrm{im}}}
+\def\P{{\mathrm{Prob}}}
+\def\diag{{\mathrm{diag}}}
+\def\sign{{\mathrm{sign}}}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematical Introduction to Data Science \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2\hfill #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+\begin{document}
+
+\lecture{Homework 9. Regularized $M$-estimators in High Dimensional Statistics}{Yuan Yao}{Due: Tuesday Dec 30, 2013}{Dec 16, 2013}
+
+The questions below marked by $\star$ will be optional.
+
+\begin{enumerate}
+\item {\em Variable Selection by LASSO:} Use the following matlab codes to simulate a $n$-by-$p$ measurement equation:
+\[ b = A x + \varepsilon \]
+{\hspace{1mm}\textcolor{green}{\%}\textcolor{green}{\% dimensions and sparsity }\\
+\hspace{1mm}n = 10;  \textcolor{green}{\% \# of rows of A }\\
+\hspace{1mm}p = 20;  \textcolor{green}{\% \# of columns of A }\\
+\hspace{1mm}s = 4;   \textcolor{green}{\% sparsity }\\
+\hspace{1mm} \\
+\hspace{1mm}\textcolor{green}{\%}\textcolor{green}{\% generate random measurement matrix}\\
+\hspace{1mm}A = randn(n,p); \\
+\hspace{1mm}A = zscore(A)/sqrt(n-1); \\
+\hspace{1mm}u\_ref = zeros(p,1); \\
+\hspace{1mm}u\_ref(randsample(p,s)) = round(10*rand(s,1)+1); \textcolor{green}{\% true sparse signal }\\
+\hspace{1mm}supp\_ref = find(u\_ref); \textcolor{green}{\% true support }\\
+\hspace{1mm} \\
+\hspace{1mm}sigma = 1;              \textcolor{green}{\% noise-level }\\
+\hspace{1mm}e = sigma*randn(n,1)/sqrt(n);    \textcolor{green}{\%   error }\\
+\hspace{1mm}b = A*u\_ref + e; \textcolor{green}{\% measurements }\\
+}
+\subitem(a) Try to find an estimator using LASSO with $\lambda=c \sigma \sqrt{\log p/n}$ with $c\in (0,1)$.
+\subitem(b) Try Least Angle Regression (LARs, R-package `glmnet') to find regularization paths.
+\subitem(c) Compare solution paths of Orthogonal Matching Pursuit (OMP) and LASSO.
+%and Linearized Bregman algorithms (write your own or try Feng Ruan's R-package at \url{http://www.math.pku.edu.cn/teachers/yaoy/reference/Libra_1.1.tar.gz}).
+
+\item $^\star$ {\em RSC and $l_2$-consistency}: Consider the regularized empirical risk minimization
+\[ \min_{\theta\in \Theta} \L( \theta, z_1^n) + \lambda_n R(\theta) \]
+whose minimizer is $\hat{\theta}_{\lambda_n}$. Let the minimizer of population risk be $\theta^\ast \in \arg\min_{\theta \in \R^p} \E_{z_1^n} \L( \theta, z_1^n) \in \M$, for some subspace $\M\in \R^p$. Assume that
+\begin{itemize}
+\item[(A1)] (Decomposable Regularizer) there is a subspace $\overline{\M} \subseteq \R^p$ which contains $\M$, such that $R(\alpha + \beta) = R(\alpha) + R(\beta)$ for $\alpha\in \M$ and $\beta\in \overline{\M}^\perp$ (in general triangle inequality $R(\alpha+\beta)\leq R(\alpha)+R(\beta)$);
+%\item[(A2)] (Restricted Strongly Convex Loss) for all $\Delta \in C(\M,\overline{\M}^\perp;\theta^\ast) :=\{\Delta\in \R^p: R(\Delta_{\overline{\M}^\perp}) \leq 3 R(\Delta_{\overline{\M}})\}$,
+\item[(A2)] (Restricted Strongly Convex Loss) for all $\Delta \in R^p$,
+\[ \L(\theta^\ast + \Delta) - \L(\theta^\ast) - \left< \nabla \L(\theta^\ast), \Delta \right> \geq \gamma \|\Delta\|_2^2 - \tau_n^2 R^2(\Delta), \ \ \ \gamma>0, \tau_n \geq 0 \]
+\item[(A3)] (Lipschitz Regularizer) for any subspace $\overline{\M}\subseteq \R^p$,
+\[   \Psi(\overline{\M}) := \sup_{\theta \in \overline{\M}\backslash \{0\}} \frac{R(\theta)} {\|\theta\|_2} <\infty \]
+ \end{itemize}
+
+Show that
+\begin{enumerate}
+\item If (A1) holds and the dual regularizer satisfies $\lambda_n \geq 2 R^\ast(\nabla \L(\theta^\ast))$, then $\hat{\Delta} := \hat{\theta}_{\lambda_n} - \theta^\ast \in C(\M,\overline{\M}^\perp;\theta^\ast)$, i.e.
+\[  R(\hat{\Delta}_{\overline{\M}^\perp}) \leq 3 R(\hat{\Delta}_{\overline{\M}}) \]
+(note: use $|\left< u, v\right>| \leq R(u) \cdot R^\ast(v)$, decomposability and triangle inequality for $R(\theta)$.)
+\item Moreover if (A2-A3) hold, and for large enough $n$ such that $16 \tau_n^2 \Psi^2(\overline{M})) \leq \gamma /2$, then
+\[ \|\Delta \|_2 \leq \frac{3\lambda_n}{\gamma} \Psi(\overline{\M}) \]
+(note: A2 is reduced to $ \L(\theta^\ast + \Delta) - \L(\theta^\ast) - \left< \nabla \L(\theta^\ast), \Delta \right> \geq \frac{\gamma}{2}\|\Delta\|_2^2$ for $\Delta\in  C(\M,\overline{\M}^\perp;\theta^\ast)$; you might use other constants)
+\item Moreover if for all $\Delta\in  C(\M,\overline{\M}^\perp;\theta^\ast)$, % $R^\ast(\partial R(\hat{\theta}_{\lambda_n}) )\leq 1$ and 
+\[ R^\ast (\nabla \L(\theta^\ast + \hat{\Delta}) - \nabla \L(\theta^\ast)) \geq \gamma R^\ast(\Delta), \]
+then
+\[ R^\ast(\hat{\theta}_{\lambda_n} - \theta^\ast) \leq \frac{3}{2\gamma} \lambda_n \]
+(note: Consider the first order KKT condition and triangle inequality for $R^\ast(u)$)
+\item apply the results above to standard LASSO
+\[ \min_\theta \frac{1}{2 n} \| Y - X\theta\|_2^2 + \lambda_n \|\theta\|_1 \]
+with $\tau_n = 0$, $\lambda_n = 2\sigma \sqrt{\frac{\log p}{n}}$ and $\Psi(\overline{\M}) = \sqrt{s}$, and derive the bounds
+\[ \|\hat{\theta}_{\lambda_n} - \theta^\ast\|_2 \leq O( \sqrt{\frac{s\log p}{n}} ) \]
+and
+\[ \|\hat{\theta}_{\lambda_n} - \theta^\ast\|_\infty \leq O ( \frac{\log p}{n}) \]
+%\item $^\star$ apply the results above to Matrix completion with nuclear norm regularization
+%\[  \min_\theta \frac{1}{2 n} \|P_n(Y - \theta)\|_F^2 + \lambda_n \|\theta\|_*, \ \ \ Y, \theta \in \R^{p_1\times p_2} \]
+%with $\Psi(\overline{\M}) = \sqrt{r}$ (rank of $\theta^\ast$), $\tau_n = c\sqrt{(p_1 + p_2)/n}$, and $P_n$ is a projection on the set of $n$ measurements.
+(Reference: A unified framework for high-dimensional analysis of M-estimators with decomposable regularizers, Negahban, Ravikumar, Wainwright, Yu, 2010)
+\end{enumerate}
+
+
+%\item {\em Linearized Bregman Algorithm}:  For any convex function $g(x)$, define its Bregman divergence by its first order Taylor expansion with a subgradient $p\in \partial g(y)$,
+%\[ D^p_g(x, y) = g(x) - g(y) - \langle p_y,  x - y\rangle, \ \ \ p(y) \in \partial g(y) \]
+%
+%\begin{enumerate}
+%\item Show that $D^p_g(x,y) \geq 0$ for convex $g(x)$ and $D^p_g(x,y)>0$ ($x\neq y$) for strongly convex $g$;
+%%\item Show that the linearized Bregman algorithm is a gradient descent algorithm for
+%%\[ x_{t+1} = x_t - \gamma_t \nabla (D_f(x,x_t) + D_g(x,x_t)) \]
+%\item Let $f(x)$ be a differentiable convex function (e.g. $f(x) = \frac{1}{2} \|A x- b\|^2_2$). The following iterative scheme is called \emph{gradient descent algorithm} for optimization problem $\min_x f(x)$
+%\[ x_{t+1} = x_t - \gamma_t \nabla f(x_t), \]
+%where $\nabla f(x_t)$ is the gradient of $f$ at $x_t$. Show that the gradient descent algorithm can be derived from the following optimization with a quadratic proximal term,
+%\[ x_{t+1} = \arg \min_x \langle x, \nabla f(x_t) \rangle + \frac{1}{2\gamma_t} \| x - x_t\|^2. \]
+%\item Find the new iterative algorithm
+%\[    x_{t+1} = \arg \min_x \langle x, \nabla f(x_t) \rangle + \frac{1}{\gamma_t} D_g(x,x_t), \]
+%where $g(x) = \|x\|_1 + \frac{1}{2\beta} \|x\|_2^2$. This gives a simple derivation of the linearized Bregman algorithm from Mirror-Descent.
+%\end{enumerate}
+%
+\end{enumerate}
+
+\end{document}
+
+
