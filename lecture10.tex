@@ -1,0 +1,642 @@
+\documentclass[twoside]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{pb-diagram}
+
+\usepackage{color}
+% \usepackage{psfig}
+\usepackage[colorlinks]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+%\newenvironment{pf}{{\noindent\sc Proof. }}{\qed}
+\newenvironment{map}{\[\begin{array}{cccc}} {\end{array}\]}
+\newcommand{\DS}{\displaystyle}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\newtheorem*{exmp}{Example}
+\newtheorem*{prob}{Problem}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+\newtheorem*{exer}{Exercise}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematics for Data Sciences \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2, Peking University \hfill Scribe: #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+%%%%%%%
+% Some commonly used notations in Learning Theory
+%%%%%%%
+
+\def\R{{\mathbb R}}
+\def\N{{\mathbb N}}
+\def\L{{\mathcal L}}
+\def\Z{{\mathbb Z}}
+\def\X{{\mathcal X}}
+\def\Y{{\mathcal Y}}
+\def\E{{\mathbb E}}
+\def\diag{{\rm diag}}
+\def\sign{{\rm sign}}
+\def\span{{\rm span}}
+\def\supp{{\rm supp}}
+\def\Pr{{\rm Prob}}
+\def\H{{\cal{H}}}
+\def\D{{\cal{D}}}
+\def\U{{\cal{U}}}
+\def\ie{{\it i.e. }}
+\def\etc{{\it etc. }}
+\def\etal{{\it et al. }}
+
+\def\De{{\Delta}}
+\def\P{{\rm Prob}}
+
+\begin{document}
+
+\lecture{Lecture 10. Normalized Graph Laplacian and Cheeger's Inequality}{Yuan Yao}{Shaokun Li}{Nov.25,2014}
+
+%\setcounter{section}{0}
+\section*{Introduction}
+
+In the last class, we give an introduction of Perron-Frobenius Theorem and unnormalized graph Laplacian.In this course, we will continue the discussion of last class.  We will mainly discuss the normalized graph Laplacian and introduce the famous Cheeger's Inequality.  We will also discuss the normalized graph Laplacian in directed graph in this class.
+
+\section{Normalized graph Laplacian}
+
+\begin{defn}[Normalized Graph Laplacian]
+\[
+\L_{ij}=\begin{cases}
+1 & i=j,  \\
+-\frac{1}{\sqrt{d_i d_j}} & i\sim j, \\
+0 & otherwise. \\
+\end{cases}
+\]
+\end{defn}
+
+In fact $\L = {D^{ - 1/2}}(D - A){D^{ - 1/2}} = D^{-1/2} L D^{-1/2}= I - {D^{ - 1/2}}(D - A){D^{ - 1/2}} $. From this one can see the relations between eigenvectors of normalized $\L$ and unnormalized $L$. For eigenvectors $\L v= \lambda v$, we have
+\[  (I - D^{-1/2} L D^{-1/2}) v = \lambda v \Leftrightarrow L u = \lambda D u ,\quad u=D^{-1/2} v,\]
+whence eigenvectors of $\L$, $v$ after rescaling by $D^{-1/2}v$, become generalized eigenvectors of $L$.
+
+We can also use the Rayleigh Quotient to calculate the eigenvalues of $\mathcal L$.
+\begin{eqnarray*}
+\frac{v^T\L v}{v^Tv} & =  &\frac{v^TD^{-\frac{1}{2}}(D-A) D^{-\frac{1}{2}}v}{v^v}  \\
+& = & \frac{u^T L u}{u^TDu}  \\
+& = & \frac{{\sum\limits_{i \sim j} {({u_i}}  - {u_j}{)^2}}}{{\sum\limits_j {{u_j}^2 d_j} }}.
+\end{eqnarray*}
+Similarly we get the relations between eigenvalue and the connected components of the graph.
+\[\# \{ {\lambda _i}(\L) = 0\}  = \# \{connected~components~of~G\}.\]
+
+Next we show that eigenvectors of $\L$ are related to random walks on graphs. This will show you why we choose this matrix to analysis the graph.
+
+We can construct a random walk on $G$ whose transition matrix is defined by
+\[{P_{ij}} \sim \frac{{{A_{ij}}}}{{\sum\limits_j {{A_{ij}}} }} = \frac{1}{{{d_i}}}.\]
+By easy calculation, we see the result below.
+\[P = {D^{ - 1}}A = {D^{ - 1/2}}(I - \L){D^{1/2}}.\]
+Hence $P$ is similar to $I-\L$. So their eigenvalues satisfy $\lambda_i (P) = 1 - \lambda_i(\L)$.
+Consider the right eigenvector $\phi$ and left eigenvector $\psi$ of $P$.
+\[{u^T}P = \lambda {u},\]
+\[Pv = \lambda v.\]
+Due to the similarity between $P$ and $\L$,
+\[{u^T}P = \lambda {u^T} \Leftrightarrow {u^T}{D^{ - 1/2}}(I - \L){D^{1/2}} = \lambda {u^T}.\]
+Let $\bar{u}  = {D^{ - 1/2}}u$, we will get:
+\[{\bar{u} ^T}(I - \L) = \lambda {\bar{u} ^T}\]
+\[\Leftrightarrow \L\bar{u}  = (1 - \lambda )\bar{u} .\]
+
+You can see $\bar{u}$ is the eigenvector of $\mathcal L$, and we can get left eigenvectors of P from $\bar{u}$ by multiply it with $D^{1/2}$ on the left side. Similarly for the right eigenvectors $v= D^{-1/2} \bar{u}$.
+
+If we choose ${u_0} = {\pi _i} \sim \frac{{{d_i}}}{{\sum {{d_i}} }}$, then:
+\[\bar{u}_0 (i) \sim \sqrt {{d_i}} ,\]
+\[\bar{u}_k^T \bar{u}_l = {\delta _{kl}},\]
+\[u_k^T D{v_l} = {\delta _{kl}},\]
+\[{\pi _i}{P_{ij}} = {\pi _j}{P_{ji}} \sim {A_{ij}} = {A_{ji}},\]
+where the last identity says the Markov chain is time-reversible.
+
+All the conclusions above show that the normalized graph Laplacian $\L$ keeps some connectivity measure of unnormalized graph Laplacian $L$. Furthermore, $\L$ is more related with random walks on graph, through which eigenvectors of $P$ are
+ easy to check and calculate. That's why we choose this matrix to analysis the graph.
+
+
+\section{A Glimpse of Laplacians for Directed Graphs}
+
+
+In this section, we will talk a little about the Laplacians for Directed Graphs.  We will focus on establishing the Laplacians.
+
+For undirected graph, we can define the normalized Laplacian$\L=I-D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$.  Suppose v is an eigenvector of $\L$, then we have $$(I-D^{-\frac{1}{2}}AD^{-\frac{1}{2}})v=\lambda v$$
+
+Here, we define D as $$d_i=\sum_{j=1}^{n}A_{ij}$$
+
+$$D=diag(d_i)$$
+
+But in directed graph, we have some problems in this definition.  The first problem is that the in degree and out degree are not the same in directed graph.  So we have that
+
+$$D_{in}=diag(\sum_{i}^{n}A_{ij})$$
+$$D_{out}=diag(\sum_{j}^{n}A_{ij})$$
+
+We define the transition probability matrix as
+
+$$P=D_{out}^{-1} A$$
+
+If the graph is primitive(indeed we do not need such a strong assumption, the graph is strong connected is enough), then we know that there exist a stationary distribution $\phi$.  According to Perron-Frobenius theorem, we have $\phi \geq 0, \phi^T P =1 \phi ^T$.  Define $\Phi=diag(\phi(i))$, $\Phi$ will help us to establish the Laplacians for directed graphs.
+
+Now we give a definition on those balanced weights.
+  \begin{defn}[circulation]
+  \begin{map}
+  F: & E & \rightarrow & \R_{\geq 0}
+  \end{map}
+  If $F$ satisfies
+  \[\sum_{u,u\rightarrow v} F(u,v)=\sum_{w,v\rightarrow w} F(v,w),\forall v,\]
+  then $F$ is called a circulation.
+  \end{defn}
+  \begin{note}
+  A circulation is a flow with no source or sink.
+  \end{note}
+
+  \begin{exmp}
+  For a directed graph, $F_\phi(u,v)=\phi(u)P(u,v)$ is a circulation, for
+  \[\sum_{u,u\rightarrow v} F_\phi(u,v)=\phi(v)=\sum_{w,v\rightarrow w} F_\phi(v,w).\]
+  \end{exmp}
+
+In the end of this section, we establish the Laplacian in directed graph.
+
+In undirected graph, we have
+
+  \begin{eqnarray*}
+   \L &=& I-D^{-1/2}AD^{-1/2} \\
+      &=& I-D^{1/2}PD^{-1/2} \\
+      &=& I-\Phi^{1/2}P\Phi^{-1/2} 
+  \end{eqnarray*}
+
+  We generalize it to the directed graph.  We will find the most important problem is that P is not symmetric in directed graph.  So we use this following definition to promise that the normalized Laplacian is symmetric.
+
+   \begin{defn}[Laplacian for Directed Graph]
+    \[\L=I-\frac{1}{2}(\Phi^{1/2}P\Phi^{-1/2}+\Phi^{-1/2}P^T\Phi^{1/2}).\]
+  \end{defn}
+
+  This is the normalized Laplacian in directed graph.  We can see easily that the Laplacian is symmetric.
+
+\section{Cheeger Inequality}
+\subsection{Cheeger constant}
+Now we are ready to introduce the Cheeger's inequality with normalized graph Laplacian.
+
+Let $G$ be a graph, $G=(V,E)$ and $S$ is a subset of $V$ whose complement is $\bar{S}=V-S$. We define $Vol(S)$, $\partial S$ and $NCUT(S)$ as below.
+\[
+Vol(S)=\sum_{i\in S}d_i.
+\]
+\[
+\partial S=\sum_{i\in S, j\in\bar{S}}A_{ij}.
+\]
+\[
+NCUT(S)=\frac{\partial S}{\min (Vol(S),Vol(\bar{S}))}.
+\]
+$NCUT(S)$ is called normalized-cut. We define the Cheeger constant
+\begin{defn}[Cheeger Constant]
+    \[ h_{G}=\min_{S}NCUT(S). \]
+  \end{defn}
+
+Finding minimal normalized graph cut is NP-hard. It is often defined that
+\[ \mbox{Cheeger ratio (expander):}\ \  h_S := \frac{\partial(S)}{Vol(S)} \]
+and
+\[ \mbox{Cheeger constant:\ \ } h_G := \min_S \max\left\{ h_S, h_{\bar{S}} \right\}. \]
+
+\subsection{Cheeger Inequality}
+Cheeger Inequality says the second smallest eigenvalue provides both upper and lower bounds on the minimal normalized graph cut. Its proof gives us a constructive polynomial algorithm to achieve such bounds.
+\begin{thm}[Cheeger Inequality]
+For every undirected graph $G$,
+\[
+\frac{h_{G}^2}{2}\le \lambda_1(\L)\le 2h_G.
+\]
+\end{thm}
+
+\begin{proof}
+(1) Upper bound:
+
+Assume the following function $f$ realizes the optimal normalized graph cut,
+\[
+f(i)=
+\left\{
+\begin{array}{cc}
+\frac{1}{Vol(S)} & i\in S , \\
+\frac{-1}{Vol(\bar{S})} & i\in \bar{S} ,\\
+\end{array}
+\right.
+\]
+By using the Rayleigh Quotient, we get
+\begin{equation*}
+\begin{split}
+\lambda_1=&\inf_{g\perp D^{1/2}e}\frac{g^T\mathcal L g}{g^Tg}\\
+\le & \frac{\sum_{i\sim j}(f_i-f_j)^2}{\sum f_i^2d_i}\\
+=& \frac{(\frac{1}{Vol(S)}+\frac{1}{Vol(\bar{S})})^2\partial S}{Vol(S)\frac{1}{Vol(S)^2}+Vol(\bar{S})\frac{1}{Vol(\bar{S})^2}}\\
+=& (\frac{1}{Vol(S)}+\frac{1}{Vol(\bar{S})})\partial S\\
+\le & \frac{2\partial S}{\min (Vol(S),Vol(\bar{S}))}=: 2 h_G.
+\end{split}
+\end{equation*}
+which gives the upper bound.
+
+(2) Lower bound: the proof of lower bound actually gives a constructive algorithm to compute an approximate optimal cut as follows, which is called Cheeger Sweep.
+
+Let $v$ be the second eigenvector, i.e. $\L v = \lambda_1 v$, and $f = D^{-1/2}v$. Then we reorder node set $V$ such that $f_1\le f_2\le ...\le f_n)$. Denote $V_{-}=\{i;v_i< 0\},V_{+}=\{i;v_i\ge v_r\}$. Without Loss of generality, we can assume
+$$ \sum_{i\in V_{-}}d_v \ge \sum_{i\in V_{+}}d_v$$
+
+Define new functions $f^+$ to be the magnitudes of $f$ on $V_+$.
+\[
+f_i^{+}=\left\{
+\begin{array}{cc}
+f_i & i\in V_{+},\\
+0 & otherwise,
+\end{array}
+\right.
+\]
+
+Now consider a series of particular subsets of $V$,
+$$S_i=\{v_1,v_2,...v_i\},$$
+and define
+$$\widetilde{Vol}(S)=\min (Vol(S),Vol(\bar{S})).$$
+$$\alpha_G=\min_{i}NCUT(S_{i}).$$
+Clearly finding the optimal value $\alpha$ just requires comparison over $n-1$ NCUT values.
+
+Below we shall show that $$\frac{h_G^2}{2}\le\frac{\alpha_G^2}{2}\le\lambda_1.$$
+
+%Let $r:=\arg\max_{i} \{ Vol(S_i) \leq Vol(G)/2\}$. Since $\sum_{i\in V} v_i d_i = 0$,
+%\[ \sum_i v_i^2 d_i = \min_c \sum_i (v_i - c)^2 d_i \leq \sum_i (v_i - v_r)^2 d_i \]
+First, we have $Lf= \lambda_1 D f$, so we must have
+\begin{equation}
+\sum_{j:j\sim i} f_i(f_i-f_j) = \lambda_1 d_i f_i^2.
+\end{equation}
+From this we will get the following results,
+
+\begin{eqnarray*}
+\lambda_1 & = & \dfrac{\sum_{i\in V_{+}}f_i\sum_{j:j\sim i}(f_i-f_j)}{\sum_{i \in V_{+}}d_if_i^2},  \\
+& = & \dfrac{\sum_{i\sim j ~ i,j\in V_{+}}(f_i-f_j)^2 + \sum_{i\in V_{+}}f_i\sum_{j\sim i ~ j\in V_{-}}(f_i-f_j)}{\sum_{i \in V_{+}}d_if_i^2}, (f_i-f_j)^2=f_i (f_i - f_j)+f_j(f_j-f_i)\\
+& > & \dfrac{\sum_{i\sim j ~ i,j\in V_{+}}(f_i-f_j)^2 + \sum_{i\in V_{+}}f_i\sum_{j\sim i ~ j\in V_{-}}(f_i)}{\sum_{i\in V_{+}}d_if_i^2},\\
+& = & \dfrac{\sum_{i\sim j}(f^{+}_i-f^{+}_j)^2 }{\sum_{i\in V}d_i{f^{+}_i}^2},\\
+& = & \dfrac{(\sum_{i\sim j}(f^+_i-f^+_j)^2)(\sum_{i\sim j}(f^+_i +f^+_j)^2)}{(\sum_{i\in V}{f^+_i}^2d_i)(\sum_{i\sim j}(f^+_i+f^+_j)^2)} \\
+& \ge & \dfrac{(\sum_{i\sim j}{f^+_i}^2-{f^+_j}^2)^2}{(\sum_{i\in V}{f^+_i}^2d_i)(\sum_{i\sim j}(f^+_i+f^+_j)^2)}, \ \ \textrm{Cauchy-Schwartz Inequality} \\
+& \ge & \dfrac{(\sum_{i\sim j}{f^+_i}^2-{f^+_j}^2)^2}{2(\sum_{i\in V}{f^+_i}^2d_i)^2},
+\end{eqnarray*}
+where the second last step is due to the Cauchy-Schwartz inequality $|\langle x,y\rangle|^2 \leq \langle x,x\rangle\cdot \langle y,y\rangle $, and the last step is due to  $\sum_{i\sim j\in V} (f_i^+ + f^+_j)^2 =\sum_{i\sim j\in V} ({f^+_i}^2 + {f^+_j}^2 + 2 f^+_i f^+_j )\leq 2 \sum_{i\sim j\in V} ({f^+_i}^2  + {f^+_j}^2) \leq 2 \sum_{i\in V} {f^+_i}^2 d_i$.
+Continued from the last inequality,
+ \begin{eqnarray*}
+\lambda_1 & \ge & \dfrac{(\sum_{i\sim j}{f^+_i}^2-{f^+_j}^2)^2}{2(\sum_{i\in V}{f^+_i}^2d_i)^2},  \\
+& \ge & \dfrac{(\sum_{i\in V}({f^+_i}^2-{f^+_{i-1}}^2) CUT(S_{i-1}))^2}{2(\sum_{i\in V}{f^+_i}^2d_i)^2}, \ \ \ \mbox{since $f_1 \leq f_{2} \leq \ldots \leq f_n$}\\
+%\ge & \dfrac{(\sum_{i\in V}|v_i^2-v_{i+1}^2|\alpha_G |\widetilde{Vol}(S_i)|)^2}{2(\sum_{i\in V_{+}}v_i^2d_i)^2} & \\
+& \ge & \dfrac{(\sum_{i\in V}({f^+_i}^2-{f^+_{i-1}}^2) \alpha_G \widetilde{Vol}(S_{i-1}))^2}{2(\sum_{i\in V}{f^+_i}^2d_i)^2} \\
+& = & \dfrac{\alpha_G^2}{2} \cdot \dfrac{(\sum_{i\in V}{f^+_{i}}^2(\widetilde{Vol}(S_{i-1})-\widetilde{Vol}(S_{i})) )^2}{(\sum_{i\in V}{f^+_i}^2d_i)^2}, \\
+%& \ge & \displaystyle \dfrac{\alpha_G^2}{2} \cdot \dfrac{(\sum_{i\in V_+}{v_{i-1}}^2(Vol(\bar{S}_{i-2})-Vol(\bar{S}_{i-1})) + {v_n}^2 Vol (\bar{S}_{n-1}))^2}{(\sum_{i\in V_{+}}v_i^2d_i)^2},\ \  \mbox{since $Vol(V_{-}) \leq Vol(V_+)$} \\
+& = & \dfrac{\alpha_G^2}{2}\dfrac{(\sum_{i\in V}{f^+_i}^2d_i)^2}{(\sum_{i\in V}{f^+_i}^2d_i)^2} = \dfrac{\alpha^2_G}{2}.
+%\end{split}
+\end{eqnarray*}
+where the last inequality is due to the assumption $Vol(V_-)\ge Vol(V_+)$, whence $\widetilde{Vol}(S_{i}) = Vol(\bar{S}_i)$ for $i\in V_+$.
+
+% \begin{eqnarray*}
+%\lambda_1 & \ge & \dfrac{(\sum_{i\sim j}{v^-_i}^2-{v^-_j}^2)^2}{2(\sum_{i\in V}{v^-_i}^2d_i)^2},  \\
+%& \ge & \dfrac{(\sum_{i=1}^n |{v^-_i}^2-{v^-_{i+1}}^2| CUT(S_{i}))^2}{2(\sum_{i\in V}{v^-_i}^2d_i)^2}, \ \ \ \mbox{since $v_1 \leq v_{2} \leq \ldots \leq v_n$}\\
+%& \ge & \dfrac{(\sum_{i\in V}({v^-_{i+1}}^2-{v^-_{i}}^2) \alpha_G \widetilde{Vol}(S_{i}))^2}{2(\sum_{i\in V}{v^-_i}^2d_i)^2} \\
+%& \ge & \displaystyle \dfrac{\alpha_G^2}{2} \cdot \dfrac{(\sum_{i\in V}{v^-_{i}}^2|\widetilde{Vol}(S_{i})-\widetilde{Vol}(S_{i-1})|)^2}{(\sum_{i\in V}{v^-_i}^2d_i)^2}  \\
+%%& \ge & \displaystyle \dfrac{\alpha_G^2}{2} \cdot \dfrac{(\sum_{i\in V_-}{v_{i+1}}^2(Vol(S_{i+1})-Vol(S_{i})) + {v_1}^2 Vol (S_1))^2}{(\sum_{i\in V_{-}}v_i^2d_i)^2},\ \ Vol(V_{-}) \leq Vol(V_+) \\
+%& = & \dfrac{\alpha_G^2}{2}\dfrac{(\sum_{i\in V_{-}}v_i^2d_i)^2}{(\sum_{i\in V_{-}}v_i^2d_i)^2} = \dfrac{\alpha^2_G}{2},
+%%\end{split}
+%\end{eqnarray*}
+%where the last inequality is due to $Vol(V_{-}) \leq Vol(V_+)$ implying $\widetilde{Vol}(S_{i}) = Vol(S_i)$ for $i\in V_-$.
+This completes the proof.
+\end{proof}
+
+\subsection{A Short Proof of Cheeger Inequality}
+Fan Chung gives a short proof of the lower bound in Simons Institute workshop, 2014.
+
+\begin{proof}[Short Proof]
+The proof is based on the fact that
+\[ h_G = \inf_{f\neq 0} \sup_{c\in \R} \frac{\sum_{i\sim j} |f(i) - f(j)|}{\sum_i |f(i) -c|d_i} \]
+where the supreme over $c$ is reached at $c^*=median(f(x):x\in V)$.
+\begin{eqnarray*}
+\lambda_1 & =& R(f)=\sup_c \dfrac{\sum_{i\sim j}(f(i) - f(j))^2}{\sum_{i}(f(i)-c)^2 d_i},  \\
+& \geq  &\dfrac{\sum_{i\sim j}(g(i) - g(j))^2}{\sum_{i}g(i)^2 d_i}, \ \ \ g(i)=f(i)-c\\
+& = & \dfrac{(\sum_{i\sim j}(g(i) - g(j))^2)(\sum_{i\sim j}(g(i) +g(j))^2)}{(\sum_{i\in V}g^2(i)d_i)((\sum_{i\sim j}(g(i) +g(j))^2)} \\
+& \ge & \dfrac{(\sum_{i\sim j}|g^2(i) - g^2(j)|)^2}{(\sum_{i\in V}g^2(i)d_i)((\sum_{i\sim j}(g(i) +g(j))^2)} , \ \ \textrm{(Cauchy-Schwartz Inequality)} \\
+& \ge & \dfrac{(\sum_{i\sim j}|g^2(i) - g^2(j)|)^2}{2( \sum_{i\in V}g^2(i)d_i)^2} , \ \ \textrm{$(g(i)+g(j))^2\leq 2 (g^2(i)+g^2(j))$} \\
+& \ge & \dfrac{h_G^2}{2}.
+\end{eqnarray*}
+\end{proof}
+
+Remark:  In fact, this proof is wrong with a obvious mistake in the last step.  I think the proof might be total wrong since that $g^2 (i)=g^2 (j)$ is possible even if $g(i)\neq g(j)$. For example when $g(i)+g(j)=0$ this would fail the last fourth step.
+
+%%%%%%%%%%%%%%%%%%%%%%
+%
+% \chapter{Random Walk on Graphs: Lumpability, Metastability, and MNcut}
+
+\section{Appendix:\\
+Laplacians and the Cheeger inequality for directed graphs}
+  The following section is mainly contained in \cite{Chung05}, which described the following results:
+  \begin{enumerate}
+    \item Define Laplacians on directed graphs.
+    \item Define Cheeger constants on directed graphs.
+    \item Give an example of the singularity of Cheeger constant on directed graph.
+    \item Use the eigenvalue of Lapacian and the Cheeger constant to estimate the convergence rate of random walk on a directed graph.
+  \end{enumerate}
+  Another good reference is \cite{LiZha10}.
+
+\subsection{Definition of Laplacians on directed graphs}
+  On a finite and strong connected directed graph $G=(V,E)$ (A directed graph is strong connected if there is a path between any pair of vertices), a weight is a function
+  \begin{map}
+  w: & E & \rightarrow & \R_{\geq0}
+  \end{map}
+  The in-degree and out-degree of a vertex are defined as
+  \begin{map}
+  d^{in}: & V & \rightarrow & \R_{\geq0} \\
+          & d^{in}_i & = & \sum_{j\in V} w_{ji} \\
+  d^{out}: & V & \rightarrow & \R_{\geq0} \\
+          & d^{out}_i & = & \sum_{j\in V} w_{ij}
+  \end{map}
+  Note that $d^{in}_{i}$ may be different from $d^{out}_{i}$.
+
+  A random walk on the weighted $G$ is a Markov chain with transition probability
+  \[P_{ij}=\frac{w_{ij}}{d^{out}_{i}}.\]
+
+  Since $G$ is strong connected, $P$ is irreducible, and consequently there is a unique stationary distribution $\phi$. (And the distribution of the Markov chain will converge to it if and only if $P$ is aperiodic.)
+
+  \begin{exmp}[undirected graph]
+  \[\phi(x)=\frac{d_x}{\sum_{y}d_y}.\]
+  \end{exmp}
+
+  \begin{exmp}[Eulerian graph]
+  If $d^{in}_{x}=d^{out}_{x}$ for every vertex $x$, then $\phi(x)=\frac{d^{out}_x}{\sum_{y}d^{out}_y}.$
+
+  This is because $d^{out}_x$ is an unchanged measure with
+  \[\sum_x d^{out}_xP_{xy}=\sum_x w_{xy}=d^{in}_y=d^{out}_y.\]
+  \end{exmp}
+
+  \begin{exmp}[exponentially small stationary dist.]
+  $G$ is a directed graph with $n+1$ vertices formed by the union of a directed circle $v_0\rightarrow v_1 \rightarrow \cdots \rightarrow v_n$ and edges $v_i\rightarrow v_0$ for $i=1,2,\cdots,n$. The weight on any edge is 1. Checking from $v_n$ to $v_0$ with the prerequisite of stationary distribution that the inward probability flow equals to the outward probability flow, we can see that
+  \[\phi(v_0)= 2^n \phi(v_n), \ie \phi(v_n) =2^{-n} \phi(v_0).\]
+
+  This exponentially small stationary distribution cannot occur in undirected graph cases for then
+  \[\phi(i)=\frac{d_i}{\sum_{j}d_j} \geq \frac{1}{n(n-1)}.\]
+  \end{exmp}
+
+  However, the stationary dist. can be no smaller than exponential, because we have
+  \begin{thm}
+  If $G$ is a strong connected directed graph with $w\equiv 1$, and $d^{out}_{x}\leq k,\forall x$, then $\max\{\phi(x):x\in V\}\leq k^D\min\{\phi(y):y\in V\},$ where $D$ is the diameter of $G$.
+  \end{thm}
+  It can be easily proved using induction on the path connecting $x$ and $y$.
+
+  Now we give a definition on those balanced weights.
+  \begin{defn}[circulation]
+  \begin{map}
+  F: & E & \rightarrow & \R_{\geq 0}
+  \end{map}
+  If $F$ satisfies
+  \[\sum_{u,u\rightarrow v} F(u,v)=\sum_{w,v\rightarrow w} F(v,w),\forall v,\]
+  then $F$ is called a circulation.
+  \end{defn}
+  \begin{note}
+  A circulation is a flow with no source or sink.
+  \end{note}
+
+  \begin{exmp}
+  For a directed graph, $F_\phi(u,v)=\phi(u)P(u,v)$ is a circulation, for
+  \[\sum_{u,u\rightarrow v} F_\phi(u,v)=\phi(v)=\sum_{w,v\rightarrow w} F_\phi(v,w).\]
+  \end{exmp}
+
+  \begin{defn}[Rayleigh quotient]
+  For a directed graph $G$ with transition probability matrix $P$ and stationary distribution $\phi$, the Rayleigh quotient for any $f:V\rightarrow $ is defined as
+  \[R(f)=\frac{\sum_{u\rightarrow v} \mid f(u)-f(v) \mid^2 \phi(u)P(u,v)} {\sum_{v} \mid f(v)\mid^2 \phi(v)}.\]
+  \end{defn}
+  \begin{note}
+  Compare with the undirected graph condition where
+  \[R(f)=\frac{\sum_{u\sim v} \mid f(u)-f(v) \mid^2 w_{uv}} {\sum_{v} \mid f(v)\mid^2 d(v)}.\]
+
+  If we look on every undirected edge $(u,v)$ as two directed edges $u\rightarrow v, v\rightarrow u$, then we get a Eulerian directed graph.
+  So $\phi(u)\sim d^{out}_{u}$ and $d^{out}_uP(u,v)=w_{uv}$, as a result $R(f)(directed) =2R(f)(undirected)$. The factor 2 is the result of looking on every edge as two edges.
+  \end{note}
+
+  The next step is to extend the definition of Laplacian to directed graphs. First we give a review on Lapalcian on undirected graphs.
+  On an undirected graph, adjacent matrix is
+  \[A_{ij}=\left\{
+                 \begin{array}{ll}
+                       1, & \hbox{$i \sim j$;} \\
+                       0, & \hbox{$i \not\sim j$.}
+                 \end{array}
+           \right.\]
+  \[D=\diag(d(i)),\]
+  \[\L=D^{-1/2}(D-A)D^{-1/2}.\]
+
+  On a directed graph, however, there are two degrees on a vertex which are generally inequivalent. Notice that on an undirected graph, stationary distribution $\phi(i)\sim d(i)$, so $D=c\Phi$, where $c$ is a constant and $\Phi=\diag(\phi(i))$.
+  \begin{eqnarray*}
+   \L &=& I-D^{-1/2}AD^{-1/2} \\
+      &=& I-D^{1/2}PD^{-1/2} \\
+      &=& I-c^{1/2}\Phi^{1/2}Pc^{-1/2}\Phi^{-1/2} \\
+      &=& I-\Phi^{1/2}P\Phi^{-1/2}
+  \end{eqnarray*}
+
+  Extending and symmetrizing it, we define Laplacian on a directed graph
+  \begin{defn}[Laplacian]
+    \[\L=I-\frac{1}{2}(\Phi^{1/2}P\Phi^{-1/2}+\Phi^{-1/2}P^*\Phi^{1/2}).\]
+  \end{defn}
+
+  Suppose the eigenvalues of $\L$ are $0= \lambda_0 \leq \lambda_1 \leq \cdots \leq \lambda_{n-1}$. Like the undirected case, we can calculate $\lambda_1$ with the Rayleigh quotient.
+  \begin{thm}\label{thm1}
+  \[\lambda_1=\inf_{\sum f(x)\phi(x)=0} \frac{R(f)}{2}.\]
+  \end{thm}
+  Before proving that, we need
+  \begin{lem}\label{thm2}
+  \[R(f)=2\frac{g\L g^*}{\parallel g\parallel^2},\textrm{ where } g=f\Phi^{1/2}.\]
+  \end{lem}
+
+  \begin{proof}
+  \begin{eqnarray*}
+    R(f) &=& \frac{\sum_{u\rightarrow v} \mid f(u)-f(v) \mid^2 \phi(u)P(u,v)} {\sum_{v} \mid f(v)\mid^2 \phi(v)} \\
+         &=& \frac{\sum_{u\rightarrow v} \mid f(u)\mid^2 \phi(u)P(u,v) + \sum_{v} \mid f(v)\mid^2 \phi(v) - \sum_{u\rightarrow v} (\overline{f(u)}f(v) + f(u)\overline{f(v)}) \phi(u)P(u,v)} {f\Phi f^*} \\
+         &=& \frac{\sum_{u} \mid f(u)\mid^2 \phi(u) + \sum_{v} \mid f(v)\mid^2 \phi(v) - (f^* \Phi P f + f \Phi P f^*} {f\Phi f^*} \\
+         &=& 2-\frac{f(P^*\Phi + \Phi P)f^*}{f\Phi f^*} \\
+         &=& 2-\frac{(g\Phi^{-1/2})(P^*\Phi + \Phi P)(\Phi^{-1/2}g^*)}{(g\Phi^{-1/2})\Phi (\Phi^{-1/2} g^*)} \\
+         &=& 2-\frac{g(\Phi^{-1/2}P^*\Phi^{1/2} + \Phi^{1/2} P\Phi^{-1/2})g^*}{gg^*} \\
+		 &=& 2\cdot\frac{g\L g^*}{\parallel g\parallel^2}
+  \end{eqnarray*}
+  \end{proof}
+
+  \begin{proof}[Proof of Theorem \ref{thm1}]
+  With Lemma \ref{thm2} and $\L(\phi(x)^{1/2})_{n\times 1}=0$, we have
+  \begin{eqnarray*}
+   \lambda_1 &=& \inf_{\sum g(x)\phi(x)^{1/2}=0} \frac{R(f)}{2}\\
+			 &=& \inf_{\sum f(x)\phi(x)=0} \frac{R(f)}{2}.
+  \end{eqnarray*}
+  \end{proof}
+
+  \begin{note}
+  \begin{eqnarray*}
+    \lambda_1 &=& \inf_{f,\sum f(x)\phi(x)=0} \frac{R(f)}{2} \\
+              &=& \inf_{f,\sum f(x)\phi(x)=0} \frac{\sum_{u\rightarrow v} \mid f(u)-f(v) \mid^2 \phi(u)P(u,v)} {2\sum_{v} \mid f(v)\mid^2 \phi(v)} \\
+              &=& \inf_{f,\sum f(x)\phi(x)=0}\sup_{c}
+\frac{\sum_{u\rightarrow v} \mid f(u)-f(v) \mid^2 \phi(u)P(u,v)} {2\sum_{v} \mid f(v)-c \mid^2 \phi(v)}
+  \end{eqnarray*}
+  \end{note}
+
+  \begin{thm}
+  Suppose the eigenvalues of $P$ are $\rho_0,\cdots,\rho_{n-1}$ with $\rho_0=1$, then
+  \[\lambda_1\leq \min_{i\neq 0}(1-Re\rho_i).\]
+  \end{thm}
+
+\subsection{Definition of Cheeger constants on directed graphs}
+  We have a circulation $F(u,v)=\phi(u)P(u,v)$. Define
+  \[F(\partial S)=\sum_{u\in S, v\not\in S} F(u,v), \\
+    F(v)=\sum_{u,u\rightarrow v} F(u,v)=\sum_{w,v\rightarrow w} F(v,w),\\
+    F(S)=\sum_{v\in S} F(v),\]
+  then $F(\partial S)=F(\partial \bar{S}).$
+
+  \begin{defn}[Cheeger constant]
+  The Cheeger constant of a graph $G$ is defined as
+  \[h(G)=\inf_{S \subset V}\frac{F(\partial S)} {\min \left( F(S), F(\bar{S}) \right)}\]
+  \end{defn}
+  \begin{note}
+  Compare with the undirected graph condition where
+  \[h_G=\inf_{S \subset V}\frac{\mid\partial S\mid} {\min \left( \mid S \mid, \mid \bar{S}\mid \right)}.\]
+  Similarly, we have
+  \begin{eqnarray*}
+  h_G(undirected) &=& \inf_{S \subset V}\frac{\mid\partial S\mid} {\min \left( \mid S \mid, \mid \bar{S}\mid \right)} \\
+       &=& \inf_{S \subset V}\frac{\sum_{u\in S,v\in \bar{S}}w_{uv}} {\min \left( \sum_{u\in S} d(u), \sum_{u\in \bar{S}}d(u) \right)} \\
+h_G(directed)&=& \inf_{S \subset V}\frac{\sum_{u\in S,v\in \bar{S}}\phi(u)P(u,v)} {\min \left( \sum_{u\in S} \phi(u), \sum_{u\in \bar{S}}\phi(u) \right)} \\
+       &=& \inf_{S \subset V}\frac{F(\partial S)} {\min \left( F(S), F(\bar{S}) \right)}.
+  \end{eqnarray*}
+  \end{note}
+
+  \begin{thm} For every directed graph $G$,
+  \[\frac{h^2(G)}{2} \leq \lambda_1 \leq 2h(G).\]
+  \end{thm}
+  The proof is similar to the undirected case using Rayleigh quotient and Theorem \ref{thm1}.
+
+\subsection{An example of the singularity of Cheeger constant on a directed graph}
+  We have already given an example of a directed graph with $n+1$ vertices and stationary distribution $\phi$ satisfying $\phi(v_n)=2^{-n}\phi(v_0)$.
+  Now we make a copy of this graph and denote the new $n+1$ vertices $u_0, \dots, u_n$. Joining the two graphs together by two edges $v_n \rightarrow u_n$ and $u_n \rightarrow v_n$, we get a bigger directed graph.
+  Let $S=(v_0,\cdots,v_n)$, we have $h(G)\sim 2^{-n}$.
+  In comparison, $h(G)\geq \frac{2}{n(n-1)}$ for undirected graph.
+
+\subsection{Estimate the convergence rate of random walks on directed graphs}
+  Define the distance of $P$ after $s$ steps and $\phi$ as
+  \[\Delta(s)=\max_{y\in V}\left( \sum_{x\in V} \frac{(P^s(y,x)-\phi(x))^2} {\phi(x)}\right)^{1/2}.\]
+  Modify the random walk into a lazy random walk $\tilde{P}=\frac{I+P}{2}$, so that it is aperiodic.
+  \begin{thm}
+  \[\Delta(t)^2\leq C(1-\frac{\lambda_1}{2})^t.\]
+  \end{thm}
+
+\subsection{Random Walks on Digraphs, The Generalized Digraph Laplacian, and
+The Degree of Asymmetry}
+In this paper the following have been discussed:
+\begin{enumerate}
+  \item Define an asymmetric Laplacian $\emph{L}$ on directed graph;
+  \item Use $\emph{L}$ to estimate the hitting time and commute time of the corresponding Markov chain;
+  \item Introduce a metric to measure the asymmetry of $\emph{L}$ and use this measure to give a tighter bound on the Markov chain mixing rate and a bound on the Cheeger constant.
+\end{enumerate}
+
+Let $P$ be the transition matrix of Markov chain, and $\pi = (\pi_1, \dots, \pi_n)^T$(column vector) denote its stationary distribution (which is unique if the Markov chain is irreducible, or if the directed graph is strongly connected). Let $\Pi = \diag\{\pi_1, \dots, \pi_n\}$, then we define the normalized Laplacian $\emph{L}$ on directed graph:
+\begin{equation}\label{E:lap}
+   \emph{L} = I - \Pi^\emph{f} P\Pi^\emph{f}
+\end{equation}
+
+\subsubsection{Hitting time, commute time and fundamental matrix}
+We establish the relations between $\emph{L}$ and the hitting time and commute time of random walk on directed graph through the fundamental matrix $Z = [z_{ij}]$, which is defined as:
+\begin{equation}
+  z_{ij} = \sum_{t=0}^{\infty} (p_{ij}^{t} - \pi_j) ,\, 1\le i,j\le n
+\end{equation}
+or alternatively as an infinite sum of matrix series:
+\begin{equation}\label{E:Z}
+  Z = \sum_{t=0}^\infty (P^t - 1 \pi^T)
+\end{equation}
+
+With the fundamental matrix, the hitting time and commute time can be expressed as follows:
+\begin{equation}
+  H_{ij} = \frac{z_{jj} - z_{ij}}{\pi_j}
+\end{equation}
+\begin{equation}
+  C_{ij} = H_{ij} + H_{ji} = \frac{z_{jj} - z_{ij}}{\pi_j} + \frac{z_{ii} - z_{ji}}{\pi_i}
+\end{equation}
+
+Using \eqref{E:Z}, we can write the fundamental matrix $Z$ in a more explicit form. Notice that
+\begin{equation}
+  (P - 1 \pi^T)(P - 1 \pi^T) = P^2 - 1 \pi^T P - P 1 \pi^T + 1 \pi^T 1 \pi^T = P^2 - 1 \pi^T
+\end{equation}
+We use the fact that $1$ and $\pi$ are the right and left eigenvector of the transition matrix $P$ with eigenvalue $1$, and that $\pi^T 1 = 1$ since $\pi$ is a distribution. Then
+\begin{equation}
+  Z + 1\pi^T = \sum_{t=0}^{\infty} (P - 1\pi^T)^t = (I - P + 1\pi^T)^{-1}
+\end{equation}
+
+\subsubsection{Green's function and Laplacian for directed graph}
+If we treat the directed graph Laplacian $\emph{L}$ as an asymmetric operator on a directed graph $G$, then we can define the Green's Function $G$ (without boundary condition) for directed graph. The entries of $G$ satisfy the conditions:
+\begin{equation}
+  (\emph{GL})_{ij} = \delta_{ij} - \sqrt{\pi_i\pi_j}
+\end{equation}
+or in the matrix form
+\begin{equation}
+  \emph{GL}  = I - \pi^f{\pi^f}^T
+\end{equation}
+
+The central theorem in the second paper associate the Green's Function $G$, the fundamental matrix $Z$ and the normalize directed graph Laplacian $L$:
+\begin{thm}
+Let $\tilde{\mathcal{Z}} = \Pi^f Z \Pi^f$ and $L^{\dagger}$ denote the Moore-Penrose pseudo-inverse $L$, then
+\begin{equation}
+  G = \tilde{\mathcal{Z}} = L^{\dagger}
+\end{equation}
+\end{thm}
+\subsection{measure of asymmetric and its relation to Cheeger constant and mixing rate}
+To measure the asymmetry in directed graph, we write the $L$ into the sum of a symmetric part and a skew-symmetric part:
+\begin{equation}
+  L = f (L + L ^T) + f (L - L^T)
+\end{equation}
+$f (L + L ^T) = \L$ is the symmetrized Laplacian introduced in the first paper. Let $\Delta = f (\L - \L ^T)$, the $\Delta$ captures the difference between $\L$ and its transpose. Let $\sigma_i$, $\lambda_i$ and $\delta_i$($1\le i \le n$) denotes the i-th singular value of $\L$, $\L$, $\Delta$ in ascending order ($\sigma_1 = \lambda_1 = \delta_1 = 0$). Then the relation $\L = \L + \Delta$ implies
+\begin{equation}
+  \lambda_i \le \sigma_i \le \lambda_i + \delta_n
+\end{equation}
+Therefore $\delta_n = \| \Delta \|_2$ is used to measure the degree of asymmetry in the directed graph.
+
+The following two theorems are application of this measure.
+\begin{thm}
+The second singular of $\L$ has bounds :
+\begin{equation}
+  \frac{h(G)^2}{2} \le \sigma_2 \le (1 + \frac{\delta_n}{\lambda_2}) \cdot 2h(G)
+\end{equation}
+where $h(G)$ is the Cheeger constant of graph $G$
+\end{thm}
+
+\begin{thm}
+For a aperiodic Markov chain $P$,
+\begin{equation}
+  \delta_n^2 \le \max\{\frac{\|\tilde{P}f\|^2}{\|f\|^2}:f\perp\pi^f\} \le(1-\lambda_2)^2 + 2\delta_n\lambda_n + \delta_n^2
+\end{equation}
+where $\tilde{P} = \Pi^f P \Pi^f$
+\end{thm}
+
+\bibliographystyle{amsalpha}
+\bibliography{../bib/YY_Endnote.bib}
+\end{document}
+
+
