@@ -1,0 +1,388 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\def\N{{\mathcal N}}
+\def\R{{\mathcal R}}
+\def\E{{\mathbb E}}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Mathematical Introduction to Data Analysis \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2\hfill #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+\begin{document}
+
+\lecture{Final Project}{Yuan Yao}{Due: Tuesday January 20, 2015}{}
+
+\section{Requirement}
+
+\begin{enumerate}
+\item Pick up ONE (or more if you like) favorite problem \emph{below} to attack. If you would like to work on a different problem outside the candidates we proposed, please email course instructors about your proposal. Brave hearts for explorations will be encouraged!
+\item The first two projects continue from the first project. 
+\item The datasets marked by $\star$ are a bit challenging due to its non-handy size, be careful. 
+\item Team work: we encourage you to form small team, up to THREE persons per group, to work on the same problem. Each team just submit ONE report, with a clear remark on each person's contribution. 
+%A sample poster file with PKU logo can be found at \\ 
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/poster_v5.pdf} \\
+%whose source LATEX codes can be downloaded at \\
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/pkuposter.zip} 
+\item In the report, show your results with your analysis of the results. Remember: scientific problem and analysis are more important than merely the performance results. Source codes may be submitted through email as a zip file, or as an appendix if it is not large.   
+\item Submit your report by email or in paper version no later than the deadline, to Teaching Assistants (TA) (\href{mailto: datascience\_hw@126.com}{datascience\_hw@126.com}). %We plan a poster session on Saturday June 21 (evening) for peer reviews. 
+\item For those who need a server, you may connect to the Linux account \url{einstein@162.105.68.237} which is public to the students in this class (if you can't remember the password, please ask TA or me by email). Remember to make your own directory before starting creation of your own files. For example
+
+\begin{itemize}
+\item {\texttt{ssh einstein@162.105.205.92}}
+\item {\texttt{INPUT your password}}
+\item {\texttt{mkdir [your own directory]}}
+\end{itemize}
+
+%\item In the last paragraph of your report, please feel free to make some comments/critics/suggestions to this class. You will get BONUS points no matter whatever you put, and such comments will be helpful to improve the class in the future! Happy New Year!
+\end{enumerate}
+
+\section{Project 1 datasets}
+
+The first two datasets can be either converted into character-cooccurance network, or directly processed as data matrix (time series of character activities). You may design problems with PCA and its extensions such as RPCA and SPCA, manifold learning such as diffusion map, and spectral clustering etc. Random projections can be also tested here. If you already have done something in project 1 and would like a follow-up to see improvement or deeper analysis, you are welcome!
+
+%Here are some interesting problems possibly for you
+%
+%\begin{itemize}
+%\item How the communities (clusters) form and evolve as the story goes on?
+%\item 
+%\end{itemize}
+
+\subsection{The Characters in A Dream of Red Mansion}
+
+A 376-by-475 matrix of character-event can be found at the course website, in .XLS, .CSV, and .MAT formats. For example the Matlab format is found at
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/hongloumeng376.mat} 
+
+\noindent with a readme file:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/readme.m}
+
+Thanks to WAN, Mengting, an update of data matrix consisting 374 characters (two of 376 are repeated) which is readable by R read.table() can be found at 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/HongLouMeng374.txt}
+
+\noindent She also kindly shares her BS thesis for your reference
+ 
+ \url{http://www.math.pku.edu.cn/teachers/yaoy/reference/WANMengTing2013_HLM.pdf}
+
+\subsection{A Journal to the West} On course website, you may also find the link to this dataset with a 302-by-408 matrix, whose matlab format is saved at
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Fall2011/xiyouji/xiyouji.mat}
+
+For your reference, here is a project presentation by Mr. LI, Liying (at PKU) which gives an analysis based on PCA
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/LiyingLI_Xiyouji2012_slides.pdf}
+
+\subsection{Finance Data}
+The following data contains 1258-by-452 matrix with closed prices of 452 stocks in SNP'500 for workdays in 4 years.
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/snp452-data.mat}
+
+%You may use PCA to explore the `invisible hands' of markets.
+
+\subsection{Hand-written Digits} The website 
+
+\url{http://www-stat.stanford.edu/\~tibs/ElemStatLearn/datasets/zip.digits/}
+
+\noindent contains images of 10 handwritten digits (`$0$',...,`9');
+
+You may try various methods to explore this dataset, from manifold learning to the state-of-the-art deep neural networks.
+
+\subsection{$^\star$ Air Quality Weibo Data} 
+
+The dataset is provided by Prof. Xiaojin Zhu from University of Wisconsin at Madison. You can login my server:
+
+\texttt{ssh einstein@162.105.205.92}
+
+\noindent using the password I provided on class. 
+
+On the read-only folder \texttt{/data/AQweibo/}, the \texttt{AQICityData/} directory contains the Weibo posts, the AQI for 108 cities with (AQI) information during the study period
+from 2013-11-18 to 2013-12-18 (both inclusive); Information for the spatiotempral bin (city,date) is in the directory \texttt{city\_date/}. See \texttt{README.txt} for more information.
+
+Any easy project is to predict the AQI as time series; a more challenging task is to incorporate other features discovered from weibo texts. 
+
+\subsection{$^\star$ SNPs Data}
+ This dataset contains a data matrix $X\in \R^{p\times n}$ of about $n=650,000$ columns of SNPs (Single Nucleid Polymorphisms) and $p=1064$ rows of peoples around the world. Each element is of three choices, $0$ (for `AA'), $1$ (for `AC'), $2$ (for `CC'), and some missing values marked by $9$. 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/ceph_hgdp_minor_code_XNA.txt.zip}
+
+Moreover, the following file contains the region where each people comes from, as well as two variables {\texttt{ind1}} and{\texttt{ind2}} such that $X({\texttt{ind1}},{\texttt{ind2}})$ removes all missing values. 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/HGDP_region.mat}
+
+Some results by PCA can be found in the following paper, Supplementary Information. 
+
+\url{http://www.sciencemag.org/content/319/5866/1100.abstract}
+
+Attention: this last dataset is relatively big with about 2GB size. 
+
+You can login my server:
+
+\texttt{ssh einstein@162.105.205.92}
+
+\noindent using the password I provided on class. On the read only folder \texttt{/data/snp/}, you will find all the data in both .txt and .mat (\texttt{data.mat, HGDP\_region.mat, readme.m}).
+
+The dataset is a bit challenging in their high dimensionality $n=650K$ which might not be handy to deal with your laptop. Random projections will be helpful here. 
+
+%\subsection{Bird Flu Dataset} (courtesy of Steve Smale and Cissy) This dataset 162 H5N1 (bird flu) virus sequences discovered around the world:
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_seq162.txt} 
+%
+%Locations of such virus discovered are reported with latitude and longitude coordinates on the globe:
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_latgrat.txt} 
+%
+%Pairwise geodesic distances between these 162 sites are constructed as  
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_geodist.txt}
+%
+%A kernel-induced $l_2$-distances between 162 virus sequences are given in 
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_l2dist.txt}
+
+\section{Heart PCI Operation Effect Prediction}
+
+The following data, provided by Dr. Jinwen Wang at Anzhen Hospital, 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/heartData_20141230.xlsx}
+
+\noindent contains 2581 patients with 73 measurements (inputs) as well as a response variable indicating if the heart operation fails (null-reflux status). The data are collected based on 2 hospital groups, Anzhen Hospital and Chaoyang-301 Hospitals, indicated by the last column. This is a classification problem, with a challenge from the large amount of missing values. Sheet 3 and 4 in the file contains some explanation of the data and variables. 
+
+The problems are listed here:
+\begin{enumerate}
+\item The inputs (covariates) are of three kinds, measurements upon check-in, measurements before PCI operation, and measurements in PCI operations. For doctors, it is desired to find a prediction model based on measurements before the operation (including check-in). Sheet 2 in the file contains only such measurements. 
+\item It is an interesting problem to explore if there is any systematic difference between 2 hospital groups. Such a group effect has been addressed systematically by Andrew Gelman in his book, Multilevel models. But it is a good to start individual models for each of the two hospitals.   
+\item It is also an interesting problem how to predict the effect based on all measurements, with lots of missing values. Sheet 1 contains the full measurements. There are some good work by previous students, which are listed here for your reference: 
+\subitem The following two reports by LU, Yu and WANG, Qing, are probably inspiring to you.
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/LuYu_201303_BigHeart.pdf} 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/WangQing_201303_BigHeart.pdf} 
+
+\subitem The following report by MIAO, Wang and LI, Yanfang, pioneers in missing value treatment. 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/MiaoLi2013S_project01.pdf}
+\end{enumerate} 
+
+In the final project, it is desired to take only those measurements upon check-in to predict the probability of non-reflux (non-reflow) after PCI operations. An interpretable model adds a big value! You may compare with your early results to show your improvements. To evaluate your results, we suggest two ways
+\begin{itemize}
+\item $5$-fold CV: to train any model, you may randomly split the data into 5 folds, with 3 fold for training, 1 fold for validation (optimizing parameter) and 1 fold for testing error (misclassification error). Currently the most state-of-the-art accuracy for all hospitals with pre-operation variables is about $85\%$, obtained by Dongming Huang, but with a large false-discovery rate compared to a small missing rate. 
+\item  AUC: compute the area-under-the-ROC, to avoid the unique choice of thresholds in classification.  
+\end{itemize}
+
+\section{World College Rating} 
+
+\begin{itemize}
+\item In the public server, the folder \texttt{/data/worldcollege} contains the following data
+\subitem $\texttt{export$\_$4271\_ideas\_20131117.csv}$: 261 colleges in the world 
+\subitem \texttt{export$\_$4271\_votes\_20131128\_n5k.csv}: about 5000 votes up to Nov 28, 2013  
+\subitem $\texttt{export\_4271\_non\_votes\_20131128.csv}$: non-votes marked as ``I can't decide" with various reasons 
+\end{itemize}
+
+Explore this data with Hodge decomposition of paired comparison data. No one has ever tried it yet. 
+
+
+\section{Social Network Data}
+Besides the two social networks constructed from two novels above, the following data are possible candidates for networks (from small to large). Problems like clustering, ranking, semi-supervised learning or transition path theories are all good ideas to pursue. You may explore them with different methodologies such as nonlinear Euclidean embedding and random walks on networks. 
+
+\subsection{Stanford Large Network Dataset Collection}
+There are various datasets collected by Jure Leskovec
+
+\url{http://snap.stanford.edu/data/} 
+
+\noindent where you may find undirected and directed graphs, possibly dynamic. 
+
+\subsection{Mark Newman's Network Data}
+The following website collects Mark Newman's network data which are smaller than Jure's. 
+
+\url{http://www-personal.umich.edu/~mejn/netdata/}
+
+
+\section{Identification of Vincent van Gogh's paintings from the forgeries}
+
+The following data, provided by Dr. Haixia Liu from CUHK,
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/vangogh-4.mat}
+
+\noindent contains a 79-by-4 data matrix $X$, as 4 geometric-tight-frame features constructed from 79 paintings, in which the first 64 are attributed to Vincent van Gogh while the remaining 15 are forgeries. The IDs of those paintings are contained in string variable, \texttt{vg} and \texttt{nvg}, while the names of those paintings are listed in the file 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/vangogh-info.pdf}
+
+With Leave-One-Out test, our current state-of-the art classification accuracy with only these 4 features is 84\%. Can you beat us? 
+
+\section{Recommendation of VIP customers}
+
+The following dataset, provided by Prof. Dongdong Ge (\href{mailto: datascience\_hw@126.com}{gedong78@163.com}) from Shanghai University of Finance and Economics,
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/baixing/mydata.rda}
+
+\noindent contains a 172,598-by-192 data matrix, as 172K phone calls made to customers from Baixing.com to upgrade their status to VIP with fees. The variable $mydata\$success$ indicates if the call is success (at rates about 3\%). This is a classification problem to predict the success probability of VIP upgrade calls. The following files contain more information on variables and background problem (as I introduced in class)
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/baixing/readme.xlsx}
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/baixing/background.pptx}
+
+The following file 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/baixing/Rcode.txt}
+
+\noindent contains some preliminary R codes with four basic models: linear models, logistic regression, decision trees, and random forests. The performance is measured by AUC, with the best
+achieved by random forests. Can you beat it?  
+
+
+\section{$^\star$ CTR (Click-Through-Rate) Prediction in Bidding Algorithm}
+
+This is a very challenging problem due to its big data size and rare event feature. The problem is similar to VIP recommendation above, though with only 1/1000 success rate. Original competition can be found from iPinYou Global Bidding Algorithm Competition at 
+
+\url{http://contest.ipinyou.com/}
+
+\noindent where the full data (about 40GB) of 3 seasons can be downloadable at Baidu WebDrive 
+
+\url{http://pan.baidu.com/s/1kTkGUQN}
+
+As part of the data, README file can be read from here:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/README}
+
+More information can be found in class notes at \url{www.ebanshu.com}. If you have worked on this problem before, make a comparative study on how did you improve over previous work. 
+
+
+%\section{Keyword Pricing (Regression)}
+%
+%The following data, collected by Prof. Hansheng Wang in Guanghua Business School at PKU, 
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/math2010_spring/Keyword/SE.csv} 
+%
+%\noindent contains two columns: the first column is a list of keywords; the second column is the profit value (positive for earning and negative for loss). Figure \ref{fig:keywords} gives some example.
+%
+%\begin{figure}[htbp]
+%\begin{center}
+%\includegraphics[width=0.6\textwidth]{keywords.png}  
+%\caption{Keywords and profit value}
+%\label{fig:keywords}
+%\end{center}
+%\end{figure}
+%
+%The purpose is to predict the profit value based on features extracted from the keywords, which might be linguistic, geographic, and any new features in your creation. Since the profit values are of real numbers, this problem is regarded as a regression problem by default. 
+%
+%A reference can be found in Mr. Jiaqi Zhu's bachelor thesis work:
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/Thesis_ZHUJiaqi.pdf}
+
+%\section{Beer Popularity and Rating}
+%
+%The following data, provided by Mr. Richard (\url{sun.richard@yahoo.com}) from Shanghai,
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/Beers_20140514.xlsx}
+%
+%\noindent contains 877 brands (rows) of beers in Chinese market, with a few attributes about ingradients, alcoholicity, price (and unit price), reviewers count, mean scores, and as well as sources of reviewers (e.g. amazon, jd, yhd etc.). Two questions are interesting to explore such data
+%
+%\begin{enumerate}
+%\item What factors are highly correlated with the popularity of beers indicated by reviewers count? 
+%\item What factors accounts for the mean rating scores? Why are those beers lowly rated? 
+%\end{enumerate}
+%
+%Note that the data does not contain lots of attributes, so think about your goal before you take a try.
+
+
+%\section{Ising Models for Biological Sequences}
+%
+%The problem is to estimate an Ising model for multiple aligned sequences of proteins in the same family. The data is provided by Dr. John Barton from MIT, in the following zip file,
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/data/protein2014.zip}
+%
+%\noindent where you will find 
+%\begin{itemize}
+%\item pro-binary.dat: A set of 10579 binarized sequences, one sequence per row, taken from the real sequence database
+%\item pro-model-binary.dat: A sample of 10000 binary sequences sampled from the model, in the same format as above
+%\item pro-couplings.dat: The inferred model parameters
+%\end{itemize}
+%
+%In the third model file, the first N=99 rows of the couplings file are the fields for sites 1 through 99, and the remaining N*(N-1)/2 entries are the couplings between sites, i.e. the entries are
+%
+%\noindent $h_1$\\
+%$h_2$ \\
+%$\ldots$\\
+%$h_{99}$\\
+%$J_{1,2}$\\
+%$J_{1,3}$ \\
+%$\ldots$ \\
+%$J_{1,99}$ \\
+%$J_{2,3}$\\
+%$\ldots$\\
+%$J_{98,99}$
+%
+%\noindent People use different conventions for the energy function, so just to be clear the convention I am using is that the energy of a configuration $x={x_1,É,x_N}$, $x_i \in \{0,1\}$ is
+%
+%$E(x) = - \sum_{i=1}^N h_i x_i - \sum_{i=1}^{N-1} \sum_{j=i+1}^N J_{i,j} x_i x_j $,
+%
+%\noindent and the probability distribution over configurations $x$ is $p(x) = \exp(-E(x))/Z$ with $Z$ the partition (normalization) function.
+%
+%%\begin{figure}[htbp]
+%%\begin{center}
+%%\includegraphics[width=0.9\textwidth]{chendi.png}  
+%%\caption{True Positive Rates on non-local contact predictions by Directed Information vs. Graphical Lasso on Yes\_Human, courtesy by Chendi Huang, indicating that graphical lasso performs better.}
+%%\label{chendi}
+%%\end{center}
+%%\end{figure}
+%
+%This project is to learn an Ising model from multiple aligned sequences. This may contains the following 2 challenges
+%\begin{enumerate}
+%\item Learn an Ising model from simulated data, e.g. the second data file above with model in the third file. You may use 2 ways to evaluate your estimator: 1) the $l_2$ distance between the parameters you learned and the true parameters, or; 2) use your models to generate new sequences and test if the marginal distribution and correlation matrix meets the data.
+%\item Learn an Ising model from real data, e.g. the first data file. Only the second method above can be applied to evaluate your estimator in this setting, since you don't know the ground truth parameters.  
+%\end{enumerate}
+%
+%(Hint) You may consider to try Xue-Zou-Cai's composite penalized conditional likelihood method. But I would recommend a recent ICML 2013 paper about Minimum Probability Flow (MPF) Learning method, downloadable at 
+%
+%\url{https://github.com/Sohl-Dickstein/Minimum-Probability-Flow-Learning}. 
+%
+%\noindent MPF is superfast! Try it, and you won't be disappointed! 
+
+
+
+%\section{*Neural Network and Deep Learning}
+%
+%The following project on deep learning for reconstructing a 2-D Gaussian Mixture Model, is proposed by Dr. Lei Jia from Baidu and posted on page 25-30 in my lecture slides
+%
+%\url{http://www.math.pku.edu.cn/teachers/yaoy/Spring2014/Lecture13.pdf}
+%
+%\noindent For those who are interested in Restricted Boltzman Machine and MNIST experiments, Hinton's matlab codes are good demonstration
+%
+%\url{http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html}
+
+\end{document}
+
+

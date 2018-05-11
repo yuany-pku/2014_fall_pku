@@ -1,0 +1,271 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\def\N{{\mathbb N}}
+\def\NN{{\mathcal N}}
+\def\R{{\mathbb R}}
+\def\E{{\mathbb E}}
+\def\rank{{\mathrm{rank}}}
+\def\tr{{\mathrm{trace}}}
+\def\P{{\mathrm{Prob}}}
+\def\sign{{\mathrm{sign}}}
+\def\diag{{\mathrm{diag}}}
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0.25 in}
+\setlength{\parskip}{0.1 in}
+
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \setcounter{section}{0}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf A Mathematical Introduction to Data Science \hfill #4} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: #2\hfill #3} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#1}{#1}
+   \vspace*{4mm}
+}
+
+
+\begin{document}
+
+\lecture{Mini-Project 1. }{Yuan Yao}{Due: Tuesday November 18, 2014}{November 4, 2014}
+
+The problem below marked by $^*$ is optional with bonus credits. % For the experimental problem, include the source codes which are runnable under standard settings. 
+
+\begin{enumerate}
+
+\item {\em Manifold Learning}: The following codes by Todd Wittman contain major manifold learning algorithms talked on class.
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Spring2011/matlab/mani.m}
+
+Precisely, eight algorithms are implemented in the codes: MDS, PCA, ISOMAP, LLE, Hessian Eigenmap, Laplacian Eigenmap, Diffusion Map, and LTSA. 
+The following nine examples are given to compare these methods,
+\begin{enumerate}
+\item Swiss roll;
+\item Swiss hole;
+\item Corner Planes;
+\item Punctured Sphere;
+\item Twin Peaks;
+\item 3D Clusters;
+\item Toroidal Helix;
+\item Gaussian;
+\item Occluded Disks.
+\end{enumerate}
+Run the codes for each of the nine examples, and analyze the phenomena you observed. 
+
+
+%\item {\em *Phase transition in PCA ``spike" model:} Consider a finite sample of $n$ i.i.d vectors $x_1,x_2,\ldots,x_n$ drawn from the $p$-dimensional Gaussian distribution $\mathcal{N}(0,\sigma^2 I_{p\times p} + \lambda_0 uu^T)$, where $\lambda_0/\sigma^2$ is the signal-to-noise ratio (SNR) and $u \in \mathbb{R}^p$. In class we showed that the largest eigenvalue $\lambda$ of the sample covariance matrix $S_n$
+%    $$S_n = \frac{1}{n} \sum_{i=1}^n x_i x_i^T$$
+%    pops outside the support of the Marcenko-Pastur distribution if $$\frac{\lambda_0}{\sigma^2} > \sqrt{\gamma},$$ or equivalently, if $$\text{SNR} > \sqrt{\frac{p}{n}}.$$ (Notice that $\sqrt{\gamma} < (1+\sqrt{\gamma})^2$, that is, $\lambda_0$ can be ``buried" well inside the support Marcenko-Pastur distribution and still the largest eigenvalue pops outside its support). All the following questions refer to the limit $n\to \infty$ and to almost surely values:
+%
+%\begin{enumerate}
+%\item Find $\lambda$ given $\text{SNR} > \sqrt{\gamma}$.
+%\item Use your previous answer to explain how the SNR can be estimated from the eigenvalues of the sample covariance matrix.
+%\item Find the squared correlation between the eigenvector $v$ of the sample covariance matrix (corresponding to the largest eigenvalue $\lambda$) and the ``true" signal component $u$, as a function of the SNR, $p$ and $n$. That is, find $|\langle u,v \rangle|^2$. 
+%\item Confirm your result using MATLAB simulations (e.g. set $u = e$; and choose $\sigma=1$ and $\lambda_0$ in different levels. Compute the largest eigenvalue and its associated eigenvector, with a comparison to the true ones.)
+%\end{enumerate}
+%
+%
+%\item {\em *Finite rank perturbations of random symmetric matrices:} Wigner's semi-circle law (proved by Eugene Wigner in 1951) concerns the limiting distribution of the eigenvalues of random symmetric matrices. It states, for example, that the limiting eigenvalue distribution of $n\times n$ symmetric matrices whose entries $w_{ij}$ on and above the diagonal $(i\leq j)$ are i.i.d Gaussians $\mathcal{N}(0,\frac{1}{4n})$ (and the entries below the diagonal are determined by symmetrization, i.e., $w_{ji}=w_{ij}$) is the semi-circle:
+%    $$p(t) = \frac{2}{\pi} \sqrt{1-t^2}, \quad -1\leq t \leq 1,$$
+%    where the distribution is supported in the interval $[-1,1]$.
+%\begin{enumerate}
+%\item Confirm Wigner's semi-circle law using MATLAB simulations (take, e.g., $n=400$).
+%\item Find the largest eigenvalue of a rank-1 perturbation of a Wigner matrix. That is, find the largest eigenvalue of the matrix $$W + \lambda_0 uu^T,$$ where $W$ is an $n\times n$ random symmetric matrix as above, and $u$ is some deterministic unit-norm vector. Determine the value of $\lambda_0$ for which a phase transition occurs. What is the correlation between the top eigenvector of $W+\lambda_0 uu^T$ and the vector $u$ as a function of $\lambda_0$? Use techniques similar to the ones we used in class for analyzing finite rank perturbations of sample covariance matrices.
+%\end{enumerate} 
+
+
+
+\item {\em RPCA}: Construct a random rank-$r$ matrix: let $A\in \R^{m\times n}$ with $a_{ij} \sim \NN(0,1)$ whose top-$r$ singular value/vector is $\lambda_i$, $u_i\in \R^m$ and $v_i \in \R^n$ ($i=1,\ldots,r$), define $L = \sum_{i=1}^r u_i v_i^T$. Construct a sparse matrix $E$ with $p$ percentage ($p\in [0,1]$) nonzero entries distributed uniformly. Then define
+\[ M = L + E. \]
+
+\begin{enumerate}
+\item Set $m=n=20$, $r=1$, and $p=0.1$, use Matlab toolbox CVX to formulate a semi-definite program for Robust PCA of $M$:
+\begin{eqnarray} \label{eq:RPCA_SDP}
+& \min & \frac{1}{2} (\tr(W_1)+\tr(W_2)) + \lambda \|S\|_1 \\
+& s.t. & L_{ij} +S_{ij} = X_{ij}, \quad (i,j)\in E  \nonumber \\
+& & \displaystyle \left[ \begin{array}{cc} 
+W_1 & L \\
+L^T & W_2
+\end{array}
+\right] \succeq 0, \nonumber
+\end{eqnarray}
+where you can use the matlab implementation in lecture notes as a reference;
+\item Choose different parameters $p\in [0,1]$ to explore the probability of successful recover;
+\item Increase $r$ to explore the probability of successful recover;
+\item $^\star$ Increase $m$ and $n$ to values beyond $50$ will make CVX difficult to solve. In this case, use the Augmented Lagrange Multiplier method, e.g. in E. J. Candes, X. Li, Y. Ma, and J. Wright (2009) "Robust Principal Component Analysis?". Journal of ACM, 58(1), 1-37 (
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Fall2011/rpca.pdf}). Make a code yourself (just a few lines of Matlab or R) and test it for $m=n=1000$. A convergence criterion often used can be $\|M-\hat{L} - \hat{S} \|_F / \|M\|_F \leq \epsilon$ ($\epsilon=10^{-6}$ for example).  
+\end{enumerate}
+
+
+\item {\em SPCA}: Define three hidden factors: 
+\[ V_1 \sim \NN(0,290), \ \ V_2 \sim \NN(0,300), \ \ V_3 = -0.3 V_1 + 0.925  V_2 + \epsilon, \ \ \ \epsilon \sim \NN(0,1), \]
+where $V_1,V_2$, and $\epsilon$ are independent. Construct 10 observed variables as follows
+\[ X_i = V_j + \epsilon^j_i, \ \ \ \epsilon^j_i \sim \NN(0,1), \] 
+with $j=1$ for $i=1,\ldots,4$, $j=2$ for $i=5,\ldots,8$, and $j=3$ for $i=9,10$ and $\epsilon^j_i$ independent for $j=1,2,3$, $i=1,\ldots,10$. 
+
+The first two principal components should be concentrated on $(X_1,X_2,X_3,X_4)$ and $(X_5,X_6,X_7,X_8)$, respectively. This is an example given
+by H. Zou, T. Hastie, and R. Tibshirani, Sparse principal component analysis, J. Comput. Graphical Statist., 15 (2006), pp. 265-286.
+
+\begin{enumerate}
+\item Compute the true covariance matrix $\Sigma$ (and the sample covariance matrix with $n$ examples, say $n=1000$);
+\item Compute the top 4 principal components of $\Sigma$ using eigenvector decomposition (by Matlab or R);
+\item Use Matlab CVX toolbox to compute the first \emph{sparse} principal component by solving the SDP problem
+\begin{eqnarray*}
+& \max & \tr (\Sigma X) - \lambda \|X\|_1 \\
+ & s.t. & \tr (X) = 1 \\
+ & & X \succeq 0
+\end{eqnarray*}
+Choose $\lambda =0$ and other positive numbers to compare your results with normal PCA;  
+
+\item Remove the first sparse PCA from $\Sigma$ and compute the second sparse PCA with the same code;
+\item Again compute the 3rd and the 4th sparse PCA of $\Sigma$ and compare them against the normal PCAs.  
+\item $^\star$ Construct an example with $200$ observed variables which is hard to deal with by CVX. 
+In this case, use the Augmented Lagrange Multiplier method by Allen Yang et al. (UC Berkeley) whose Matlab codes can be found at 
+\url{http://www.eecs.berkeley.edu/~yang/software/SPCA/SPCA_ALM.zip}. 
+\end{enumerate}
+%\item {\em James Stein Estimator for $p=1$:} 
+%
+%From Theorem 3.1 in the lecture notes, we know that MLE $\hat{\mu} = Y$ is admissible when $p=1 \text{ or } 2$. However if we use SURE to calculate the risk of James Stein Estimator,
+%\[
+%	R(\hat{\mu}^{\text{JS}},\mu) = \E U(Y) 
+%	= p - \E_\mu \frac{(p-2)^2}{\lVert Y \rVert^2}
+%	< p = R(\hat{\mu}^{\text{MLE}},\mu)
+%\]
+%it seems that for $p=1$ James Stein Estimator should still has lower risk than MLE for any $\mu$.
+% Explain what violates the above calculation for $p=1$.
+%
+
+\end{enumerate}
+
+
+
+\section{Mini-Project Requirement and Datasets}
+
+This project aims to exercise the tools in the class, such as random projections, robust PCA, sparse PCA, etc., based on the real datasets. In the below, we list some candidate datasets for your reference. 
+
+\begin{enumerate}
+\item Pick up ONE (or more if you like) favorite dataset below to work. If you would like to work on a different problem outside the candidates we proposed, please email course instructor about your proposal.  
+\item Team work: we encourage you to form small team, up to THREE persons per group, to work on the same problem. Each team just submit ONE report, with a clear remark on each person's contribution. 
+\item In the report, (1) design or raise your scientific problems (a good problem is sometimes more important than solving it); (2) show your results with your careful analysis of the results toward answering your problem. Remember: scientific analysis and reasoning are more important than merely the performance results. Source codes may be submitted through email as a zip file, or as an appendix if it is not large.    
+\item Submit your report by email or paper version no later than the deadline, to Teaching Assistant (TA), Jiechao Xiong (\href{mailto:datascience\_hw@126.com}{datascience\_hw@126.com}). 
+\end{enumerate}
+
+
+\subsection{The Characters in A Dream of Red Mansion} 
+
+A 376-by-475 matrix of character-event can be found at the course website, in .XLS, .CSV, and .MAT formats. For example the Matlab format is found at
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/hongloumeng376.mat} 
+
+\noindent with a readme file:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/readme.m}
+
+Thanks to Ms. WAN, Mengting (now at UIUC), an update of data matrix consisting 374 characters (two of 376 are repeated) which is readable by R read.table() can be found at 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/hongloumeng/HongLouMeng374.txt}
+
+\noindent She also kindly shares her BS thesis for your reference
+ 
+ \url{http://www.math.pku.edu.cn/teachers/yaoy/reference/WANMengTing2013_HLM.pdf}
+
+% Among various choices of analysis, with this data matrix $X$, you may form a weighted graph $W=X * X'$, pursue PCA of $X$. 
+
+\subsection{A Journal to the West} On course website, you may also find the link to this dataset with a 302-by-408 matrix, whose matlab format is saved at
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/Fall2011/xiyouji/xiyouji.mat}
+
+For your reference, here is a project presentation by Mr. LI, Liying (at PKU) which gives an analysis based on PCA
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/reference/LiyingLI_Xiyouji2012_slides.pdf}
+
+
+\subsection{Finance Data}
+The following data contains 1258-by-452 matrix with closed prices of 452 stocks in SNP'500 for workdays in 4 years.
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/snp452-data.mat}
+
+%You may use PCA to explore the `invisible hands' of markets.
+
+\subsection{Hand-written Digits} The website 
+
+\url{http://www-stat.stanford.edu/\~tibs/ElemStatLearn/datasets/zip.digits/}
+
+contains images of 10 handwritten digits (`$0$',...,`9');
+
+
+\subsection{Air Quality Weibo Data} (courtesy of Prof. Xiaojin Zhu from University of Wisconsin at Madison) 
+You can login my server:
+
+\texttt{ssh einstein@162.105.205.92}
+
+\noindent using the password I provided on class. 
+
+On the read-only folder \texttt{/data/AQweibo/}, the \texttt{AQICityData/} directory contains the Weibo posts, the AQI for 108 cities with (AQI) information during the study period
+from 2013-11-18 to 2013-12-18 (both inclusive); Information for the spatiotempral bin (city,date) is in the directory \texttt{city\_date/}. See \texttt{README.txt} for more information.
+
+
+
+\subsection{SNPs Data}
+ This dataset contains a data matrix $X\in \R^{p\times n}$ of about $n=650,000$ columns of SNPs (Single Nucleid Polymorphisms) and $p=1064$ rows of peoples around the world. Each element is of three choices, $0$ (for `AA'), $1$ (for `AC'), $2$ (for `CC'), and some missing values marked by $9$. 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/ceph_hgdp_minor_code_XNA.txt.zip}
+
+Moreover, the following file contains the region where each people comes from, as well as two variables {\texttt{ind1}} and{\texttt{ind2}} such that $X({\texttt{ind1}},{\texttt{ind2}})$ removes all missing values. 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/HGDP_region.mat}
+
+Some results by PCA can be found in the following paper, Supplementary Information. 
+
+\url{http://www.sciencemag.org/content/319/5866/1100.abstract}
+
+Attention: this last dataset is relatively big with about 2GB size. 
+
+You can login my server:
+
+\texttt{ssh einstein@162.105.205.92}
+
+\noindent using the password I provided on class. On the read only folder \texttt{/data/snp/}, you will find all the data in both .txt and .mat (\texttt{data.mat, HGDP\_region.mat, readme.m}).
+
+
+
+\subsection{Bird Flu Dataset} (courtesy of Steve Smale and Cissy) This dataset 162 H5N1 (bird flu) virus sequences discovered around the world:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_seq162.txt} 
+
+Locations of such virus discovered are reported with latitude and longitude coordinates on the globe:
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_latgrat.txt} 
+
+Pairwise geodesic distances between these 162 sites are constructed as  
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_geodist.txt}
+
+A kernel-induced $l_2$-distances between 162 virus sequences are given in 
+
+\url{http://www.math.pku.edu.cn/teachers/yaoy/data/birdflu_l2dist.txt}
+\end{document}
+
+
